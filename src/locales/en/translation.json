@@ -1,0 +1,25 @@
+{
+  "admin": "Admin",
+  "language": "Language",
+  "actions": {
+    "add": "Add",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "search": "Search",
+    "save": "Save"
+  },
+  "languages": {
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "total_items": "Total items",
+  "selected_items": "Selected items",
+  "song": "Song",
+  "song_detail": {
+    "name": "Name",
+    "genre": "Genre",
+    "last_updated": "Last updated"
+  },
+  "action": "Action"
+}

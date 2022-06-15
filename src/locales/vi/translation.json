@@ -1,0 +1,26 @@
+{
+  "admin": "Quản trị viên",
+  "language": "Ngôn ngữ",
+  "actions": {
+    "add": "Thêm",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "back": "Trở về",
+    "search": "Tìm kiếm",
+    "save": "Lưu"
+  },
+  "languages": {
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "total_items": "Tổng số bài hát",
+  "selected_items": "Số bài hát đang lựa chọn",
+  "song": "Bài hát",
+  "song_detail": {
+    "name": "Tên",
+    "genre": "Thể loại",
+    "author": "Tác giả",
+    "last_updated": "Cập nhật lần cuối"
+  },
+  "action": "Hành động"
+}
