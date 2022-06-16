@@ -11,6 +11,7 @@ function App() {
   const [state, setState] = useState("list")
   const [playerMode, setPlayerMode] = useState("play")
   const [playingSong, setPlayingSong] = useState("")
+  const [lang, setLang] = useState(localStorage.getItem("lang") || "en")
 
   const { t } = useTranslation()
 
@@ -55,31 +56,26 @@ function App() {
         <p className="font-bold">{t("language")}</p>
 
         <div class="dropdown ml-2">
-          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            <option selected> {t("language")}</option>
-            <option value="vi">
-              <p
-                class="dropdown-item pointer"
-                onClick={() => changeLanguage("vi")}
-              >
-                {t("languages.vi")}
-              </p>
+          <select
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            value={lang}
+            onChange={(e) => {
+              changeLanguage(e.currentTarget.value)
+            }}
+          >
+            <option selected={lang === "vi" ? true : false} value="vi">
+              <p class="dropdown-item pointer">{t("languages.vi")}</p>
             </option>
-            <option value="en">
-              <p
-                class="dropdown-item pointer"
-                onClick={() => changeLanguage("en")}
-              >
-                {t("languages.en")}
-              </p>
+            <option selected={lang === "en" ? true : false} value="en">
+              <p class="dropdown-item pointer">{t("languages.en")}</p>
             </option>
           </select>
         </div>
       </div>
 
-      {state == "list" && <ListSong callback={callback} />}
-      {state == "add" && <AddSong callback={callback} />}
-      {state == "play" && (
+      {state === "list" && <ListSong callback={callback} />}
+      {state === "add" && <AddSong callback={callback} />}
+      {state === "play" && (
         <Player callback={callback} song={playingSong} mode={playerMode} />
       )}
     </div>

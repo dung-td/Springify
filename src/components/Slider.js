@@ -8,7 +8,7 @@ export const Slider = ({ onChange, percentage }) => {
   }, [percentage])
 
   return (
-    <div className="slider-container grid-400">
+    <div className="slider-container">
       <div
         className="progress-bar-cover"
         style={{

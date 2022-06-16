@@ -104,56 +104,92 @@ export const Player = (props) => {
     <div className="">
       {song ? (
         <>
-          {/* Player */}
-          <div className="player-container">
-            <Slider onChange={onChange} percentage={percentage} />
-            <div className="grid-400 mr-auto ml-auto flex items-center justify-between">
-              <div className="inline-flex items-center justify-center mr-2">
-                <div>
-                  <span class="material-icons mt-3 pointer">skip_previous</span>
-                </div>
-                <div>
-                  <span
-                    class="material-icons mt-3 pointer"
-                    onClick={() => play()}
-                  >
-                    {isPlaying ? "pause" : "play_arrow"}
-                  </span>
-                </div>
-                <div>
-                  <span class="material-icons mt-3 pointer">skip_next</span>
-                </div>
+          <div className="grid-600 mr-auto ml-auto">
+            <div className="inline-flex items-center justity-between w-full">
+              <div
+                className="pointer rounded-md px-4 py-1"
+                onClick={() => props.callback("goback", "")}
+              >
+                <span class="material-icons">arrow_back</span>
               </div>
-              <div className="inline-flex items-center justify-center">
+            </div>
+          </div>
+
+          {/* Player */}
+          <div className="player-container grid-player ml-auto mr-auto rounded-md shadow-md mb-4">
+            <img
+              className="rounded-t-md"
+              alt={song.name}
+              src={
+                song.thumbnail ||
+                "https://www.wyzowl.com/wp-content/uploads/2019/01/Ultimate-Guide-Stock-Music-Royalty-Free-Music-Custom-Music.png"
+              }
+            ></img>
+            <div className="p-2">
+              <Slider onChange={onChange} percentage={percentage} />
+
+              <div className="inline-flex items-center justify-between w-full">
                 <div>
                   <p className="font-medium">{convertTime(currentTime)}</p>
-                </div>
-                <div>
-                  <span class="material-icons">minimize</span>
                 </div>
                 <div>
                   <p className="font-medium">{convertTime(duration)}</p>
                 </div>
               </div>
-
-              <audio
-                muted={isMuted}
-                ref={songRef}
-                src={song.src}
-                onLoadedData={(e) => {
-                  let audio = songRef.current
-                  audio.play()
-                  console.log(e.currentTarget.duration)
-                  setDuration(e.currentTarget.duration)
-                }}
-                onTimeUpdate={(e) => {
-                  setCurrentTime(e.currentTarget.currentTime)
-                }}
-              />
-
               <div>
+                <p className="text-center font-bold text-xl  mt-2">
+                  {song.name}
+                </p>
+              </div>
+              <div>
+                <p className="text-center font-normal text-sm mt-2 mb-2">
+                  {song.author}
+                </p>
+              </div>
+              <div className="inline-flex items-center justify-between w-full p-2">
+                <div className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110">
+                  <span class="material-icons text-white">skip_previous</span>
+                </div>
+                <div>
+                  <div
+                    className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-20 h-20 inline-flex items-center justify-center pointer hover:scale-110"
+                    onClick={() => play()}
+                  >
+                    <span class="material-icons text-white">
+                      {isPlaying ? "pause" : "play_arrow"}
+                    </span>
+                  </div>
+                </div>
+                <div className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110">
+                  <span class="material-icons text-white">skip_next</span>
+                </div>
+              </div>
+              <div className="mr-auto ml-auto flex items-center justify-between mt-2">
+                <audio
+                  muted={isMuted}
+                  ref={songRef}
+                  src={song.src}
+                  onLoadedData={(e) => {
+                    let audio = songRef.current
+                    audio.play()
+                    console.log(e.currentTarget.duration)
+                    setDuration(e.currentTarget.duration)
+                  }}
+                  onTimeUpdate={(e) => {
+                    setCurrentTime(e.currentTarget.currentTime)
+                  }}
+                />
+
+                <span class="material-icons pointer hover:text-cyan-500/50">
+                  shuffle
+                </span>
+
+                <span class="material-icons pointer hover:text-cyan-500/50">
+                  replay
+                </span>
+
                 <span
-                  class="material-icons h-full mt-3 pointer"
+                  class="material-icons pointer hover:text-cyan-500/50"
                   onClick={() => mute()}
                 >
                   {isMuted ? "volume_mute" : "volume_up"}
@@ -163,9 +199,9 @@ export const Player = (props) => {
           </div>
 
           {/* Details */}
-          <div className="border p-2 rounded-md grid-400 mr-auto ml-auto">
+          <div className="border p-2 rounded-md grid-600 mr-auto ml-auto">
             <p className="p-4 font-bold text-center border-b">
-              {song.name + " - " + song.author}{" "}
+              {t("information")}
             </p>
             <div className="grid grid-cols-3">
               <div className="items-center px-4 py-2 font-medium space-y-3">
@@ -208,21 +244,13 @@ export const Player = (props) => {
                 <div className="w-full px-4 py-2">
                   <p className="py-2">
                     {" "}
-                    {moment(song.lastUpdate || new Date()).format(
-                      "h:mm DD/MM/YYYY"
-                    )}
+                    {moment(song.updateAt).format("hh:mm DD/MM/YYYY")}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="inline-flex items-center justify-end w-full">
-              <div
-                className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
-                onClick={() => props.callback("goback", "")}
-              >
-                <p className="text-center">{t("actions.back")}</p>
-              </div>
               {isEditing ? (
                 <div
                   className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"

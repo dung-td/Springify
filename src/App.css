@@ -4,7 +4,11 @@
   margin-left: auto;
 }
 
-.grid-400 {
+.grid-player {
+  max-width: 400px !important;
+}
+
+.grid-600 {
   max-width: 600px !important;
 }
 

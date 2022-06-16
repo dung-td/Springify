@@ -20,8 +20,9 @@
     "name": "Name",
     "genre": "Genre",
     "author": "Author",
-    "src": "Nguồn",
+    "src": "Source",
     "last_updated": "Last updated"
   },
+  "information": "Information",
   "action": "Action"
 }
