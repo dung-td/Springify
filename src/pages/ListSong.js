@@ -44,41 +44,59 @@ export const ListSong = (props) => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mt-4">
-        <div>
-          <button className="m-2 px-4 py-1" onClick={() => add()}>
-            {t("actions.add")}
-          </button>
-          <button className="m-2 px-4 py-1">{t("actions.delete")}</button>
+      <div className="inline-flex items-center justify-between w-full">
+        <div className="inline-flex items-center justify-between w-1/3">
+          <div
+            className="rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2"
+            onClick={() => add()}
+          >
+            <p className="text-center">{t("actions.add")}</p>
+          </div>
+          <div className="rounded-md border border-gray-200 p-2 mb-2 w-1/2">
+            <p className="text-center">{t("actions.delete")}</p>
+          </div>
         </div>
 
         <div class="">
           <input
-            type="text"
-            class="form-control"
+            type="search"
+            class="block px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
             placeholder={t("actions.search")}
+            required
           />
         </div>
       </div>
 
-      <div>
-        <table class="table">
-          <thead>
+      <div className="text-center">
+        <p className="font-bold text-xl uppercase mb-2">Danh sách bài hát</p>
+      </div>
+
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col">
+              <th className="px-6 py-3" scope="col">
                 <input type="checkbox"></input>
               </th>
-              <th scope="col">{t("song_detail.name")}</th>
-              <th scope="col">{t("song_detail.author")}</th>
-              <th scope="col">{t("song_detail.genre")}</th>
-              <th scope="col">{t("action")}</th>
+              <th className="px-6 py-3" scope="col">
+                {t("song_detail.name")}
+              </th>
+              <th className="px-6 py-3" scope="col">
+                {t("song_detail.author")}
+              </th>
+              <th className="px-6 py-3" scope="col">
+                {t("song_detail.genre")}
+              </th>
+              <th className="px-6 py-3" scope="col">
+                {t("action")}
+              </th>
             </tr>
           </thead>
           <tbody>
             {songList.map((song) => {
               return (
-                <tr key={song.id}>
-                  <th scope="col">
+                <tr class="bg-white border-b text-black" key={song.id}>
+                  <th class="px-6 py-4" scope="col">
                     <input
                       type="checkbox"
                       onChange={(e) => {
@@ -95,13 +113,13 @@ export const ListSong = (props) => {
                       }}
                     ></input>
                   </th>
-                  <td>{song.name}</td>
+                  <td class="px-6 py-4 font-bold ">{song.name}</td>
 
-                  <td>{song.author}</td>
+                  <td class="px-6 py-4">{song.author}</td>
 
-                  <td>{song.genre}</td>
+                  <td class="px-6 py-4">{song.genre}</td>
 
-                  <td>
+                  <td class="px-6 py-4 space-x-2">
                     <span
                       class="material-icons pointer"
                       onClick={() => {
@@ -111,8 +129,6 @@ export const ListSong = (props) => {
                     >
                       play_arrow
                     </span>
-                  </td>
-                  <td>
                     <span
                       class="material-icons pointer"
                       onClick={() => edit(song.id)}
@@ -127,51 +143,24 @@ export const ListSong = (props) => {
         </table>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="inline-flex justify-between items-center w-full p-4">
         <div>
-          <p>
+          <p className="text-xl">
             {t("total_items")}: {songList.length}{" "}
           </p>
-          <p>
+          <p className="text-xl">
             {t("selected_items")}: {selectedSongs.length}
           </p>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center me-2">
-            <p>Page size</p>
-            <div class="dropdown ms-2">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                25
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="#">
-                    25
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    50
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    100
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div>
-            <input type="number"></input>
-          </div>
+        <div>
+          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <option selected>Page size</option>
+            <option value="US">5</option>
+            <option value="CA">10</option>
+            <option value="FR">15</option>
+            <option value="DE">20</option>
+          </select>
         </div>
       </div>
     </div>

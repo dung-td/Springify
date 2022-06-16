@@ -46,41 +46,34 @@ function App() {
   }
 
   return (
-    <div className="grid">
+    <div className="w-full grid p-4">
       {/* Header */}
-      <div className="d-flex justify-content-end align-items-center">
+      <div className="inline-flex justify-end flex-row items-center">
         <span class="material-icons">person</span>
-        <p className="fw-bold mb-0">{t("admin")}</p>
-        <p className="fw-bold mb-0 ms-2 me-2">|</p>
-        <p className="fw-bold mb-0">{t("language")}</p>
+        <p className="font-bold">{t("admin")}</p>
+        <p className="font-bold ml-2 mr-2">|</p>
+        <p className="font-bold">{t("language")}</p>
 
-        <div class="dropdown ms-2">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            {t("language")}
-          </button>
-          <ul class="dropdown-menu">
-            <li>
+        <div class="dropdown ml-2">
+          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option selected> {t("language")}</option>
+            <option value="vi">
               <p
                 class="dropdown-item pointer"
                 onClick={() => changeLanguage("vi")}
               >
                 {t("languages.vi")}
               </p>
-            </li>
-            <li>
+            </option>
+            <option value="en">
               <p
                 class="dropdown-item pointer"
                 onClick={() => changeLanguage("en")}
               >
                 {t("languages.en")}
               </p>
-            </li>
-          </ul>
+            </option>
+          </select>
         </div>
       </div>
 

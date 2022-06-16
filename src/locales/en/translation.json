@@ -19,6 +19,8 @@
   "song_detail": {
     "name": "Name",
     "genre": "Genre",
+    "author": "Author",
+    "src": "Nguồn",
     "last_updated": "Last updated"
   },
   "action": "Action"
