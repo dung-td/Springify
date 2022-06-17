@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { server } from "../interfaces/server"
 
 export const ListSong = (props) => {
+  const [isLogin, setIsLogin] = useState(false)
   const [songList, setSongList] = useState([])
   const [selectedSongs, setSelectedSongs] = useState([])
   const { t } = useTranslation()
@@ -71,20 +72,22 @@ export const ListSong = (props) => {
   return (
     <div>
       <div className="inline-flex items-center justify-between w-full">
-        <div className="inline-flex items-center justify-between w-1/3">
-          <div
-            className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2"
-            onClick={() => add()}
-          >
-            <p className="text-center">{t("actions.add")}</p>
+        {isLogin ? (
+          <div className="inline-flex items-center justify-between w-1/3">
+            <div
+              className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2"
+              onClick={() => add()}
+            >
+              <p className="text-center">{t("actions.add")}</p>
+            </div>
+            <div
+              className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
+              onClick={() => _delete()}
+            >
+              <p className="text-center">{t("actions.delete")}</p>
+            </div>
           </div>
-          <div
-            className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
-            onClick={() => _delete()}
-          >
-            <p className="text-center">{t("actions.delete")}</p>
-          </div>
-        </div>
+        ) : null}
 
         <div class="">
           <input
@@ -176,12 +179,14 @@ export const ListSong = (props) => {
                     >
                       play_arrow
                     </span>
-                    <span
-                      class="material-icons pointer"
-                      onClick={() => edit(song.id)}
-                    >
-                      edit
-                    </span>
+                    {isLogin ? (
+                      <span
+                        class="material-icons pointer"
+                        onClick={() => edit(song.id)}
+                      >
+                        edit
+                      </span>
+                    ) : null}
                   </td>
                 </tr>
               )

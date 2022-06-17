@@ -8,10 +8,10 @@ import { useTranslation } from "react-i18next"
 import i18n from "./i18n"
 
 function App() {
-  const [state, setState] = useState("list")
   const [playerMode, setPlayerMode] = useState("play")
   const [playingSong, setPlayingSong] = useState("")
   const [lang, setLang] = useState(localStorage.getItem("lang") || "en")
+  const [state, setState] = useState("list")
 
   const { t } = useTranslation()
 

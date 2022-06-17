@@ -6,6 +6,7 @@ import { Slider } from "../components/Slider"
 import { server } from "../interfaces/server"
 
 export const Player = (props) => {
+  const [isLogin, setIsLogin] = useState(false)
   const [isEditing, setIsEditing] = useState(
     props.mode === "edit" ? true : false
   )
@@ -26,6 +27,10 @@ export const Player = (props) => {
   useEffect(() => {
     let p = Math.round((currentTime / duration) * 100)
     setPercentage(p)
+
+    if (p >= 100) {
+      next()
+    }
   }, [currentTime])
 
   // Get music data
@@ -250,80 +255,82 @@ export const Player = (props) => {
           </div>
 
           {/* Details */}
-          <div className="border p-2 rounded-md grid-player md:grid-600 mr-auto ml-auto mb-4">
-            <p className="p-4 font-bold text-center border-b">
-              {t("information")}
-            </p>
-            <div className="grid grid-cols-5">
-              <div className="items-center px-4 py-2 font-medium space-y-3 col-span-2">
-                <p className="text-sm  py-2">{t("song_detail.name")}: </p>
-                <p className="text-sm  py-2">{t("song_detail.author")}: </p>
-                <p className="text-sm  py-2">{t("song_detail.genre")}: </p>
-                <p className="text-sm  py-2">
-                  {t("song_detail.last_updated")}:{" "}
-                </p>
-              </div>
-              <div className="items-center px-4 py-2 font-bold space-y-3 col-span-3">
-                <input
-                  class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
-                  type="text"
-                  value={songName}
-                  onChange={(e) => {
-                    setSongName(e.currentTarget.value)
-                  }}
-                  disabled={!isEditing}
-                />
-                <input
-                  class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
-                  type="text"
-                  value={songAuthor}
-                  onChange={(e) => {
-                    setSongAuthor(e.currentTarget.value)
-                  }}
-                  disabled={!isEditing}
-                />
-                <input
-                  class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
-                  type="text"
-                  value={songGenre}
-                  onChange={(e) => {
-                    setSongGenre(e.currentTarget.value)
-                  }}
-                  disabled={!isEditing}
-                />
-                <div className="w-full px-4 py-2">
-                  <p className="py-2">
-                    {" "}
-                    {moment(song.updateAt).format("hh:mm DD/MM/YYYY")}
+          {isLogin ? (
+            <div className="border p-2 rounded-md grid-player md:grid-600 mr-auto ml-auto mb-4">
+              <p className="p-4 font-bold text-center border-b">
+                {t("information")}
+              </p>
+              <div className="grid grid-cols-5">
+                <div className="items-center px-4 py-2 font-medium space-y-3 col-span-2">
+                  <p className="text-sm  py-2">{t("song_detail.name")}: </p>
+                  <p className="text-sm  py-2">{t("song_detail.author")}: </p>
+                  <p className="text-sm  py-2">{t("song_detail.genre")}: </p>
+                  <p className="text-sm  py-2">
+                    {t("song_detail.last_updated")}:{" "}
                   </p>
                 </div>
+                <div className="items-center px-4 py-2 font-bold space-y-3 col-span-3">
+                  <input
+                    class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+                    type="text"
+                    value={songName}
+                    onChange={(e) => {
+                      setSongName(e.currentTarget.value)
+                    }}
+                    disabled={!isEditing}
+                  />
+                  <input
+                    class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+                    type="text"
+                    value={songAuthor}
+                    onChange={(e) => {
+                      setSongAuthor(e.currentTarget.value)
+                    }}
+                    disabled={!isEditing}
+                  />
+                  <input
+                    class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+                    type="text"
+                    value={songGenre}
+                    onChange={(e) => {
+                      setSongGenre(e.currentTarget.value)
+                    }}
+                    disabled={!isEditing}
+                  />
+                  <div className="w-full">
+                    <p className="">
+                      {" "}
+                      {moment(song.updateAt).format("hh:mm DD/MM/YYYY")}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="inline-flex items-center justify-end w-full">
-              {isEditing ? (
+              <div className="inline-flex items-center justify-end w-full">
+                {isEditing ? (
+                  <div
+                    className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-2/4"
+                    onClick={() => onSave()}
+                  >
+                    <p className="text-center">{t("actions.save")}</p>
+                  </div>
+                ) : (
+                  <div
+                    className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-2/4"
+                    onClick={() => onEdit()}
+                  >
+                    <p className="text-center"> {t("actions.edit")}</p>
+                  </div>
+                )}
                 <div
-                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-2/4"
-                  onClick={() => onSave()}
+                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
+                  onClick={() => onDelete()}
                 >
-                  <p className="text-center">{t("actions.save")}</p>
+                  <p className="text-center"> {t("actions.delete")}</p>
                 </div>
-              ) : (
-                <div
-                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-2/4"
-                  onClick={() => onEdit()}
-                >
-                  <p className="text-center"> {t("actions.edit")}</p>
-                </div>
-              )}
-              <div
-                className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
-                onClick={() => onDelete()}
-              >
-                <p className="text-center"> {t("actions.delete")}</p>
               </div>
             </div>
-          </div>
+          ) : null}
         </>
       ) : null}
     </div>
