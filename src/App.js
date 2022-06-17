@@ -1,4 +1,4 @@
-import { useState, ReactDOM } from "react"
+import { useState, ReactDOM, useEffect } from "react"
 import "./App.css"
 import { ListSong } from "./pages/ListSong"
 import { AddSong } from "./pages/AddSong"
@@ -42,7 +42,6 @@ function App() {
     i18n.changeLanguage(lang, (err, t) => {
       localStorage.setItem("lang", lang)
       if (err) return console.log("something went wrong loading", err)
-      t("key")
     })
   }
 
@@ -58,15 +57,15 @@ function App() {
         <div class="dropdown ml-2">
           <select
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            value={lang}
             onChange={(e) => {
+              console.log(e.currentTarget.value)
               changeLanguage(e.currentTarget.value)
             }}
           >
-            <option selected={lang === "vi" ? true : false} value="vi">
+            <option value="vi">
               <p class="dropdown-item pointer">{t("languages.vi")}</p>
             </option>
-            <option selected={lang === "en" ? true : false} value="en">
+            <option value="en">
               <p class="dropdown-item pointer">{t("languages.en")}</p>
             </option>
           </select>

@@ -23,6 +23,8 @@
     "src": "Source",
     "last_updated": "Last updated"
   },
+  "nowPlaying": "Now playing",
+  "upcoming": "Upcomming",
   "information": "Information",
   "action": "Action"
 }

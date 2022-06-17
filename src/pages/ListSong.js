@@ -5,9 +5,22 @@ import { server } from "../interfaces/server"
 
 export const ListSong = (props) => {
   const [songList, setSongList] = useState([])
-
-  const [selectedSongs, setSeletedSongs] = useState([])
+  const [selectedSongs, setSelectedSongs] = useState([])
   const { t } = useTranslation()
+  const [currentPage, setCurrentPage] = useState(0)
+  const [limit, setLimit] = useState(5)
+  const [pageCount, setPageCount] = useState([])
+  const [selectedAll, setSelectedAll] = useState(false)
+
+  useEffect(() => {
+    if (selectedAll) {
+      songList.forEach((song) => {
+        setSelectedSongs((prevState) => [...prevState, song.id])
+      })
+    } else {
+      setSelectedSongs([])
+    }
+  }, [selectedAll])
 
   useEffect(() => {
     fetch(`${server}/music/all`)
@@ -15,19 +28,26 @@ export const ListSong = (props) => {
       .then((data) => {
         if (data.status == "ok") {
           let songs = new Array()
-          data.object.forEach((song) => {
-            songs.push({
-              id: song.id,
-              name: song.name,
-              author: song.author,
-              genre: song.genre,
-              updateAt: song.updateAt,
-            })
-            setSongList(songs)
-          })
+          let length = data.object.length
+          if (length / limit < parseInt(length / limit)) {
+            length = length / limit
+          } else {
+            length = length / limit + 1
+          }
+          setPageCount(Array.from(Array(parseInt(length)).keys()))
         }
       })
-  }, [])
+  }, [limit])
+
+  useEffect(() => {
+    fetch(`${server}/music/page?page=${currentPage}&limit=${limit}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status == "ok") {
+          setSongList(data.object.songs)
+        }
+      })
+  }, [currentPage, limit])
 
   const play = (id) => {
     console.log(id)
@@ -42,17 +62,26 @@ export const ListSong = (props) => {
     props.callback("add", id)
   }
 
+  const _delete = () => {
+    console.log()
+  }
+
+  console.log(selectedSongs)
+
   return (
     <div>
       <div className="inline-flex items-center justify-between w-full">
         <div className="inline-flex items-center justify-between w-1/3">
           <div
-            className="rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2"
+            className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2"
             onClick={() => add()}
           >
             <p className="text-center">{t("actions.add")}</p>
           </div>
-          <div className="rounded-md border border-gray-200 p-2 mb-2 w-1/2">
+          <div
+            className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
+            onClick={() => _delete()}
+          >
             <p className="text-center">{t("actions.delete")}</p>
           </div>
         </div>
@@ -76,7 +105,12 @@ export const ListSong = (props) => {
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th className="px-6 py-3" scope="col">
-                <input type="checkbox"></input>
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    setSelectedAll(!selectedAll)
+                  }}
+                ></input>
               </th>
               <th className="px-6 py-3" scope="col">
                 {t("song_detail.name")}
@@ -99,16 +133,29 @@ export const ListSong = (props) => {
                   <th class="px-6 py-4" scope="col">
                     <input
                       type="checkbox"
+                      checked={selectedSongs.includes(song.id)}
+                      onClick={(e) => {
+                        if (
+                          !e.target.checked &&
+                          selectedSongs.includes(song.id)
+                        ) {
+                          var array = [...selectedSongs]
+                          let index = array.indexOf(song.id)
+                          if (index !== -1) {
+                            array.splice(index, 1)
+                            setSelectedSongs(array)
+                          }
+                        }
+                      }}
                       onChange={(e) => {
-                        if (e.target.checked) {
-                          setSeletedSongs((prevState) => [
+                        if (
+                          e.target.checked &&
+                          !selectedSongs.includes(song.id)
+                        ) {
+                          setSelectedSongs((prevState) => [
                             ...prevState,
                             song.id,
                           ])
-                          console.log(selectedSongs)
-                        } else {
-                          let index = selectedSongs.indexOf(song.id)
-                          selectedSongs.splice(index, 1)
                         }
                       }}
                     ></input>
@@ -154,15 +201,70 @@ export const ListSong = (props) => {
         </div>
 
         <div>
-          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-            <option selected>Page size</option>
-            <option value="US">5</option>
-            <option value="CA">10</option>
-            <option value="FR">15</option>
-            <option value="DE">20</option>
+          <select
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            onChange={(e) => {
+              setLimit(e.currentTarget.value)
+            }}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
           </select>
         </div>
       </div>
+
+      <nav className="text-center">
+        <ul class="inline-flex -space-x-px">
+          <li>
+            <a
+              class="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              onClick={() => {
+                setCurrentPage(pageCount[0])
+              }}
+            >
+              Previous
+            </a>
+          </li>
+          {pageCount.map((page) => {
+            return (
+              <li>
+                {currentPage == page ? (
+                  <a
+                    class="cursor-pointer py-2 px-3 text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700"
+                    onClick={() => {
+                      setCurrentPage(page)
+                    }}
+                  >
+                    {page + 1}
+                  </a>
+                ) : (
+                  <a
+                    class="cursor-pointer py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                    onClick={() => {
+                      setCurrentPage(page)
+                    }}
+                  >
+                    {page + 1}
+                  </a>
+                )}
+              </li>
+            )
+          })}
+
+          <li>
+            <a
+              class="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              onClick={() => {
+                setCurrentPage(pageCount[pageCount.length - 1])
+              }}
+            >
+              Last
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   )
 }

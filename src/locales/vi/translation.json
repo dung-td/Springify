@@ -20,7 +20,11 @@
     "name": "Tên",
     "genre": "Thể loại",
     "author": "Tác giả",
+    "src": "Nguồn",
     "last_updated": "Cập nhật lần cuối"
   },
+  "nowPlaying": "Bài hát hiện tại",
+  "upcoming": "Tiếp theo",
+  "information": "Thông tin",
   "action": "Hành động"
 }

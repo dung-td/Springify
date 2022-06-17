@@ -9,18 +9,18 @@ export const Player = (props) => {
   const [isEditing, setIsEditing] = useState(
     props.mode === "edit" ? true : false
   )
-
   const [percentage, setPercentage] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(false)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
   const [song, setSong] = useState()
+  const [nextSong, setNextSong] = useState()
+  const [previousSong, setPreviousSong] = useState()
   const [songName, setSongName] = useState()
   const [songAuthor, setSongAuthor] = useState()
   const [songGenre, setSongGenre] = useState()
   const songRef = useRef()
-
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -35,9 +35,27 @@ export const Player = (props) => {
       .then((data) => {
         if (data.status == "ok") {
           setSong(data.object)
+          setSongName(data.object.name)
+          setSongAuthor(data.object.author)
+          setSongGenre(data.object.genre)
         }
       })
   }, [])
+
+  // Get previous and next
+  useEffect(() => {
+    console.log(song)
+    if (song != null) {
+      fetch(`${server}/music/getRelated?id=${song.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status == "ok") {
+            setNextSong(data.object[0])
+            setPreviousSong(data.object[1])
+          }
+        })
+    }
+  }, [song])
 
   const play = () => {
     const audio = songRef.current
@@ -57,6 +75,22 @@ export const Player = (props) => {
 
   const mute = () => {
     setIsMuted(!isMuted)
+  }
+
+  const next = () => {
+    setSong(nextSong)
+    setSongName(nextSong.name)
+    setSongAuthor(nextSong.author)
+    setSongGenre(nextSong.genre)
+    setIsPlaying(true)
+  }
+
+  const previous = () => {
+    setSong(previousSong)
+    setSongName(previousSong.name)
+    setSongAuthor(previousSong.author)
+    setSongGenre(previousSong.genre)
+    setIsPlaying(true)
   }
 
   const onChange = (value) => {
@@ -104,14 +138,23 @@ export const Player = (props) => {
     <div className="">
       {song ? (
         <>
-          <div className="grid-600 mr-auto ml-auto">
+          <div className="grid-player mr-auto ml-auto">
             <div className="inline-flex items-center justity-between w-full">
               <div
-                className="pointer rounded-md px-4 py-1"
+                className="pointer rounded-md py-1"
                 onClick={() => props.callback("goback", "")}
               >
                 <span class="material-icons">arrow_back</span>
               </div>
+            </div>
+            <div className="text-center text-base mb-2">
+              <p className="">
+                {t("nowPlaying")}:{" "}
+                <span className="font-bold">{song.name}</span>
+              </p>
+              <p className="italic text-md">
+                {nextSong ? t("upcoming") + ": " + nextSong.name : ""}
+              </p>
             </div>
           </div>
 
@@ -119,6 +162,8 @@ export const Player = (props) => {
           <div className="player-container grid-player ml-auto mr-auto rounded-md shadow-md mb-4">
             <img
               className="rounded-t-md"
+              width={400}
+              heigh={400}
               alt={song.name}
               src={
                 song.thumbnail ||
@@ -147,7 +192,10 @@ export const Player = (props) => {
                 </p>
               </div>
               <div className="inline-flex items-center justify-between w-full p-2">
-                <div className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110">
+                <div
+                  className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110"
+                  onClick={() => previous()}
+                >
                   <span class="material-icons text-white">skip_previous</span>
                 </div>
                 <div>
@@ -160,7 +208,10 @@ export const Player = (props) => {
                     </span>
                   </div>
                 </div>
-                <div className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110">
+                <div
+                  className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110"
+                  onClick={() => next()}
+                >
                   <span class="material-icons text-white">skip_next</span>
                 </div>
               </div>
@@ -199,24 +250,25 @@ export const Player = (props) => {
           </div>
 
           {/* Details */}
-          <div className="border p-2 rounded-md grid-600 mr-auto ml-auto">
+          <div className="border p-2 rounded-md grid-player md:grid-600 mr-auto ml-auto mb-4">
             <p className="p-4 font-bold text-center border-b">
               {t("information")}
             </p>
-            <div className="grid grid-cols-3">
-              <div className="items-center px-4 py-2 font-medium space-y-3">
-                <p className="px-4 py-2">{t("song_detail.name")}: </p>
-                <p className="px-4 py-2">{t("song_detail.author")}: </p>
-                <p className="px-4 py-2">{t("song_detail.genre")}: </p>
-                <p className="px-4 py-2">{t("song_detail.last_updated")}: </p>
+            <div className="grid grid-cols-5">
+              <div className="items-center px-4 py-2 font-medium space-y-3 col-span-2">
+                <p className="text-sm  py-2">{t("song_detail.name")}: </p>
+                <p className="text-sm  py-2">{t("song_detail.author")}: </p>
+                <p className="text-sm  py-2">{t("song_detail.genre")}: </p>
+                <p className="text-sm  py-2">
+                  {t("song_detail.last_updated")}:{" "}
+                </p>
               </div>
-              <div className="items-center px-4 py-2 font-bold space-y-3 col-span-2">
+              <div className="items-center px-4 py-2 font-bold space-y-3 col-span-3">
                 <input
                   class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                   type="text"
-                  defaultValue={song.name}
+                  value={songName}
                   onChange={(e) => {
-                    e.preventDefault()
                     setSongName(e.currentTarget.value)
                   }}
                   disabled={!isEditing}
@@ -224,9 +276,8 @@ export const Player = (props) => {
                 <input
                   class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                   type="text"
-                  defaultValue={song.author}
+                  value={songAuthor}
                   onChange={(e) => {
-                    e.preventDefault()
                     setSongAuthor(e.currentTarget.value)
                   }}
                   disabled={!isEditing}
@@ -234,9 +285,8 @@ export const Player = (props) => {
                 <input
                   class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                   type="text"
-                  defaultValue={song.genre}
+                  value={songGenre}
                   onChange={(e) => {
-                    e.preventDefault()
                     setSongGenre(e.currentTarget.value)
                   }}
                   disabled={!isEditing}
@@ -253,14 +303,14 @@ export const Player = (props) => {
             <div className="inline-flex items-center justify-end w-full">
               {isEditing ? (
                 <div
-                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
+                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-2/4"
                   onClick={() => onSave()}
                 >
                   <p className="text-center">{t("actions.save")}</p>
                 </div>
               ) : (
                 <div
-                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
+                  className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-2/4"
                   onClick={() => onEdit()}
                 >
                   <p className="text-center"> {t("actions.edit")}</p>
