@@ -1,4 +1,5 @@
 import { useState, ReactDOM, useEffect } from "react"
+import { Routes, Route, Link } from "react-router-dom"
 import "./App.css"
 import { ListSong } from "./pages/ListSong"
 import { AddSong } from "./pages/AddSong"
@@ -8,35 +9,7 @@ import { useTranslation } from "react-i18next"
 import i18n from "./i18n"
 
 function App() {
-  const [playerMode, setPlayerMode] = useState("play")
-  const [playingSong, setPlayingSong] = useState("")
-  const [lang, setLang] = useState(localStorage.getItem("lang") || "en")
-  const [state, setState] = useState("list")
-
   const { t } = useTranslation()
-
-  const callback = (action, songId) => {
-    console.log(songId)
-    switch (action) {
-      case "play":
-      default:
-        setPlayingSong(songId)
-        setPlayerMode("play")
-        setState("play")
-        break
-      case "edit":
-        setPlayerMode("edit")
-        setPlayingSong(songId)
-        setState("play")
-        break
-      case "goback":
-        setState("list")
-        break
-      case "add":
-        setState("add")
-        break
-    }
-  }
 
   const changeLanguage = (lang) => {
     i18n.changeLanguage(lang, (err, t) => {
@@ -72,11 +45,11 @@ function App() {
         </div>
       </div>
 
-      {state === "list" && <ListSong callback={callback} />}
-      {state === "add" && <AddSong callback={callback} />}
-      {state === "play" && (
-        <Player callback={callback} song={playingSong} mode={playerMode} />
-      )}
+      <Routes>
+        <Route path="/play/:id" element={<Player />} />
+        <Route path="/" element={<ListSong />} />
+        <Route path="/add" element={<AddSong />} />
+      </Routes>
     </div>
   )
 }

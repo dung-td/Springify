@@ -4,6 +4,7 @@ import "./index.css"
 import App from "./App"
 import bootstrap from "bootstrap"
 import reportWebVitals from "./reportWebVitals"
+import { BrowserRouter } from "react-router-dom"
 
 import i18n from "./i18n"
 import { I18nextProvider } from "react-i18next"
@@ -23,9 +24,11 @@ root.render(
       <title>Springify</title>
     </head>
 
-    <I18nextProvider i18n={i18n}>
-      <App />
-    </I18nextProvider>
+    <BrowserRouter>
+      <I18nextProvider i18n={i18n}>
+        <App />
+      </I18nextProvider>
+    </BrowserRouter>
   </React.StrictMode>
 )
 

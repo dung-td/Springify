@@ -26,5 +26,8 @@
   "nowPlaying": "Bài hát hiện tại",
   "upcoming": "Tiếp theo",
   "information": "Thông tin",
-  "action": "Hành động"
+  "action": "Hành động",
+  "songList": "Danh sách bài hát",
+  "previous": "Trang đầu",
+  "last": "Trang cuối"
 }

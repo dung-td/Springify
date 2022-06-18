@@ -1,15 +1,15 @@
 import React, { useRef, useState, useEffect } from "react"
+import { Link, useParams } from "react-router-dom"
 import moment from "moment"
 import { useTranslation } from "react-i18next"
 
 import { Slider } from "../components/Slider"
 import { server } from "../interfaces/server"
 
-export const Player = (props) => {
+export const Player = () => {
+  let { id } = useParams()
   const [isLogin, setIsLogin] = useState(false)
-  const [isEditing, setIsEditing] = useState(
-    props.mode === "edit" ? true : false
-  )
+  const [isEditing, setIsEditing] = useState(false)
   const [percentage, setPercentage] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(false)
@@ -35,17 +35,19 @@ export const Player = (props) => {
 
   // Get music data
   useEffect(() => {
-    fetch(`${server}/music?id=${props.song}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status == "ok") {
-          setSong(data.object)
-          setSongName(data.object.name)
-          setSongAuthor(data.object.author)
-          setSongGenre(data.object.genre)
-        }
-      })
-  }, [])
+    if (id !== undefined) {
+      fetch(`${server}/music?id=${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            setSong(data.object)
+            setSongName(data.object.name)
+            setSongAuthor(data.object.author)
+            setSongGenre(data.object.genre)
+          }
+        })
+    }
+  }, [id])
 
   // Get previous and next
   useEffect(() => {
@@ -145,12 +147,11 @@ export const Player = (props) => {
         <>
           <div className="grid-player mr-auto ml-auto">
             <div className="inline-flex items-center justity-between w-full">
-              <div
-                className="pointer rounded-md py-1"
-                onClick={() => props.callback("goback", "")}
-              >
-                <span class="material-icons">arrow_back</span>
-              </div>
+              <Link to="/">
+                <div className="pointer rounded-md py-1">
+                  <span class="material-icons">arrow_back</span>
+                </div>
+              </Link>
             </div>
             <div className="text-center text-base mb-2">
               <p className="">

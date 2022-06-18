@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-
+import { Link } from "react-router-dom"
 import { server } from "../interfaces/server"
 
 export const ListSong = (props) => {
@@ -27,8 +27,8 @@ export const ListSong = (props) => {
     fetch(`${server}/music/all`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.status == "ok") {
-          let songs = new Array()
+        if (data.status === "ok") {
+          // let songs = new Array()
           let length = data.object.length
           if (length / limit < parseInt(length / limit)) {
             length = length / limit
@@ -44,24 +44,11 @@ export const ListSong = (props) => {
     fetch(`${server}/music/page?page=${currentPage}&limit=${limit}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.status == "ok") {
+        if (data.status === "ok") {
           setSongList(data.object.songs)
         }
       })
   }, [currentPage, limit])
-
-  const play = (id) => {
-    console.log(id)
-    props.callback("play", id)
-  }
-
-  const edit = (id) => {
-    props.callback("edit", id)
-  }
-
-  const add = (id) => {
-    props.callback("add", id)
-  }
 
   const _delete = () => {
     console.log()
@@ -74,12 +61,11 @@ export const ListSong = (props) => {
       <div className="inline-flex items-center justify-between w-full">
         {isLogin ? (
           <div className="inline-flex items-center justify-between w-1/3">
-            <div
-              className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2"
-              onClick={() => add()}
-            >
-              <p className="text-center">{t("actions.add")}</p>
-            </div>
+            <Link to="/add">
+              <div className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2">
+                <p className="text-center">{t("actions.add")}</p>
+              </div>
+            </Link>
             <div
               className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
               onClick={() => _delete()}
@@ -100,7 +86,9 @@ export const ListSong = (props) => {
       </div>
 
       <div className="text-center">
-        <p className="font-bold text-xl uppercase mb-2">Danh sách bài hát</p>
+        <p className="font-bold text-xl uppercase mb-2">
+          {t("songList").toUpperCase()}
+        </p>
       </div>
 
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -170,22 +158,13 @@ export const ListSong = (props) => {
                   <td class="px-6 py-4">{song.genre}</td>
 
                   <td class="px-6 py-4 space-x-2">
-                    <span
-                      class="material-icons pointer"
-                      onClick={() => {
-                        console.log(song.id)
-                        play(song.id)
-                      }}
-                    >
-                      play_arrow
-                    </span>
+                    <Link to={`/play/${song.id}`}>
+                      <span class="material-icons pointer">play_arrow</span>
+                    </Link>
                     {isLogin ? (
-                      <span
-                        class="material-icons pointer"
-                        onClick={() => edit(song.id)}
-                      >
-                        edit
-                      </span>
+                      <Link to={`/play/${song.id}`}>
+                        <span class="material-icons pointer">edit</span>
+                      </Link>
                     ) : null}
                   </td>
                 </tr>
@@ -221,52 +200,52 @@ export const ListSong = (props) => {
       </div>
 
       <nav className="text-center">
-        <ul class="inline-flex -space-x-px">
+        <ul class="inline-flex -space-x-px items-center">
           <li>
-            <a
+            <p
               class="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               onClick={() => {
                 setCurrentPage(pageCount[0])
               }}
             >
-              Previous
-            </a>
+              {t("previous")}
+            </p>
           </li>
           {pageCount.map((page) => {
             return (
               <li>
-                {currentPage == page ? (
-                  <a
+                {currentPage === page ? (
+                  <p
                     class="cursor-pointer py-2 px-3 text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700"
                     onClick={() => {
                       setCurrentPage(page)
                     }}
                   >
                     {page + 1}
-                  </a>
+                  </p>
                 ) : (
-                  <a
+                  <p
                     class="cursor-pointer py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                     onClick={() => {
                       setCurrentPage(page)
                     }}
                   >
                     {page + 1}
-                  </a>
+                  </p>
                 )}
               </li>
             )
           })}
 
           <li>
-            <a
+            <p
               class="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               onClick={() => {
                 setCurrentPage(pageCount[pageCount.length - 1])
               }}
             >
-              Last
-            </a>
+              {t("last")}
+            </p>
           </li>
         </ul>
       </nav>

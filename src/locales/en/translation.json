@@ -26,5 +26,8 @@
   "nowPlaying": "Now playing",
   "upcoming": "Upcomming",
   "information": "Information",
-  "action": "Action"
+  "action": "Action",
+  "songList": "Song List",
+  "previous": "Previous",
+  "last": "Last"
 }
