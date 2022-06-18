@@ -29,5 +29,11 @@
   "action": "Action",
   "songList": "Song List",
   "previous": "Previous",
-  "last": "Last"
+  "last": "Last",
+  "logout": "Log out",
+  "login": "Login",
+  "fail": "Fail",
+  "success": "Success",
+  "actionsuccess": "Your changes has been saved!",
+  "nopermission": "You don't have permission to do this!"
 }

@@ -1,12 +1,15 @@
+import "./App.css"
 import { useState, ReactDOM, useEffect } from "react"
 import { Routes, Route, Link } from "react-router-dom"
-import "./App.css"
+import Modal from "@mui/material/Modal"
+import Box from "@mui/material/Box"
 import { ListSong } from "./pages/ListSong"
 import { AddSong } from "./pages/AddSong"
 import { Player } from "./pages/Player"
 
 import { useTranslation } from "react-i18next"
 import i18n from "./i18n"
+import ModalLogin from "./components/ModalLogin"
 
 function App() {
   const { t } = useTranslation()
@@ -18,12 +21,43 @@ function App() {
     })
   }
 
+  const [isLogin, setIsLogin] = useState(
+    localStorage.getItem("jwt") != null ? true : false
+  )
+
+  const [isOpenModal, setIsOpenModal] = useState(false)
+
+  const logout = () => {
+    localStorage.clear()
+    setIsLogin(false)
+    window.location.reload()
+  }
+
   return (
     <div className="w-full grid p-4">
       {/* Header */}
       <div className="inline-flex justify-end flex-row items-center">
         <span class="material-icons">person</span>
-        <p className="font-bold">{t("admin")}</p>
+        {isLogin ? (
+          <>
+            <p className="font-bold">{t("admin")}</p>
+            <div
+              className="border border-gray-200 rounded-md px-4 py-2 pointer ml-4"
+              onClick={() => logout()}
+            >
+              <span className="font-bold">Đăng xuất</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              className="border border-gray-200 rounded-md px-4 py-2 pointer ml-4"
+              onClick={() => setIsOpenModal(true)}
+            >
+              <span className="font-bold">Đăng nhập</span>
+            </div>
+          </>
+        )}
         <p className="font-bold ml-2 mr-2">|</p>
         <p className="font-bold">{t("language")}</p>
 
@@ -50,8 +84,26 @@ function App() {
         <Route path="/" element={<ListSong />} />
         <Route path="/add" element={<AddSong />} />
       </Routes>
+
+      <Modal open={isOpenModal} onClose={() => setIsOpenModal(false)}>
+        <Box sx={style}>
+          <ModalLogin />
+        </Box>
+      </Modal>
     </div>
   )
+}
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  height: 400,
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #fff",
+  p: 4,
 }
 
 export default App

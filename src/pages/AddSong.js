@@ -1,31 +1,43 @@
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { server } from "../interfaces/server"
+import Backdrop from "@mui/material/Backdrop"
+import CircularProgress from "@mui/material/CircularProgress"
 import Swal from "sweetalert2"
 
 export const AddSong = (props) => {
   const { t } = useTranslation()
+  const [isLoading, setIsLoading] = useState(false)
   const [songName, setSongName] = useState("")
   const [songAuthor, setSongAuthor] = useState("")
   const [songGenre, setSongGenre] = useState("")
   const [songSrc, setSongSrc] = useState()
+  const [songThumbnail, setSongThumbnail] = useState()
 
   const back = () => {
     props.callback("goback", "")
   }
 
   const add = () => {
+    // setIsLoading(true)
     let songData = new FormData()
     songData.append("src", songSrc)
     songData.append("name", songName)
     songData.append("author", songAuthor)
     songData.append("genre", songGenre)
+    songData.append("thumbnail", songThumbnail)
     fetch(`${server}/music/upload`, {
       method: "POST",
       body: songData,
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
+        setIsLoading(false)
         if (data.status == "ok") {
           Swal.fire("Thành công!", "Bài hát đã được thêm!", "success").then(
             () => {
@@ -98,6 +110,20 @@ export const AddSong = (props) => {
           ></input>
         </div>
 
+        <div className="mt-2">
+          <p className="mb-0 me-2">Thumbnail:</p>
+          <input
+            multiple={false}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const files = Array.from(e.target.files)
+              setSongThumbnail(files[0])
+              console.log("files:", files)
+            }}
+          ></input>
+        </div>
+
         <div className="flex justify-end items-center mt-2">
           <div
             className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
@@ -113,6 +139,16 @@ export const AddSong = (props) => {
           </div>
         </div>
       </div>
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+        className="flex flex-col"
+        // onClick={handleCloseLoading}
+      >
+        <p>Đang tải...</p>
+        <CircularProgress className="mt-4" color="inherit" />
+      </Backdrop>
     </div>
   )
 }

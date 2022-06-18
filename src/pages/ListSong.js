@@ -4,7 +4,9 @@ import { Link } from "react-router-dom"
 import { server } from "../interfaces/server"
 
 export const ListSong = (props) => {
-  const [isLogin, setIsLogin] = useState(false)
+  const [isLogin, setIsLogin] = useState(
+    localStorage.getItem("jwt") != null ? true : false
+  )
   const [songList, setSongList] = useState([])
   const [selectedSongs, setSelectedSongs] = useState([])
   const { t } = useTranslation()
@@ -54,18 +56,16 @@ export const ListSong = (props) => {
     console.log()
   }
 
-  console.log(selectedSongs)
-
   return (
     <div>
       <div className="inline-flex items-center justify-between w-full">
         {isLogin ? (
           <div className="inline-flex items-center justify-between w-1/3">
-            <Link to="/add">
-              <div className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2">
+            <div className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2">
+              <Link to="/add">
                 <p className="text-center">{t("actions.add")}</p>
-              </div>
-            </Link>
+              </Link>
+            </div>
             <div
               className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
               onClick={() => _delete()}

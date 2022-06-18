@@ -5,10 +5,13 @@ import { useTranslation } from "react-i18next"
 
 import { Slider } from "../components/Slider"
 import { server } from "../interfaces/server"
+import Swal from "sweetalert2"
 
 export const Player = () => {
   let { id } = useParams()
-  const [isLogin, setIsLogin] = useState(false)
+  const [isLogin, setIsLogin] = useState(
+    localStorage.getItem("jwt") != null ? true : true
+  )
   const [isEditing, setIsEditing] = useState(false)
   const [percentage, setPercentage] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
@@ -36,7 +39,7 @@ export const Player = () => {
   // Get music data
   useEffect(() => {
     if (id !== undefined) {
-      fetch(`${server}/music?id=${id}`)
+      fetch(`${server}/music/get?id=${id}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.status === "ok") {
@@ -115,8 +118,9 @@ export const Player = () => {
     console.log(song)
     fetch(`${server}/music/update`, {
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       },
       method: "PUT",
       body: JSON.stringify({
@@ -126,8 +130,15 @@ export const Player = () => {
         author: songAuthor,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401 || res.status === 403) {
+          Swal.fire(t("fail"), t("nopermission"), "error")
+        } else {
+          res.json()
+        }
+      })
       .then((data) => {
+        Swal.fire(t("success"), "Thành công!", "success")
         setIsEditing(false)
       })
   }
