@@ -10,7 +10,7 @@ import Swal from "sweetalert2"
 export const Player = () => {
   let { id } = useParams()
   const [isLogin, setIsLogin] = useState(
-    localStorage.getItem("jwt") != null ? true : true
+    localStorage.getItem("jwt") != null ? true : false
   )
   const [isEditing, setIsEditing] = useState(false)
   const [percentage, setPercentage] = useState(0)

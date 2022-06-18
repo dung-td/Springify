@@ -90,6 +90,14 @@ function App() {
           <ModalLogin />
         </Box>
       </Modal>
+
+      <span className="text-md sm:text-center mt-4">
+        © 2022{" "}
+        <a className="text-bold underline" href="https://facebook.com/tngdcdng">
+          dungtd
+        </a>
+        . All Rights Reserved{" "}
+      </span>
     </div>
   )
 }
