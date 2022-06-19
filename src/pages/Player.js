@@ -6,12 +6,17 @@ import { useTranslation } from "react-i18next"
 import { Slider } from "../components/Slider"
 import { server } from "../interfaces/server"
 import Swal from "sweetalert2"
+import Backdrop from "@mui/material/Backdrop"
+import CircularProgress from "@mui/material/CircularProgress"
+import Snackbar from "@mui/material/Snackbar"
 
 export const Player = () => {
   let { id } = useParams()
   const [isLogin, setIsLogin] = useState(
     localStorage.getItem("jwt") != null ? true : false
   )
+  const [isLoading, setIsLoading] = useState(true)
+  const [isOpenSnackbar, setIsOpenSnackbar] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [percentage, setPercentage] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
@@ -38,11 +43,14 @@ export const Player = () => {
 
   // Get music data
   useEffect(() => {
+    setIsLoading(true)
     if (id !== undefined) {
       fetch(`${server}/music/get?id=${id}`)
         .then((res) => res.json())
         .then((data) => {
+          setIsLoading(false)
           if (data.status === "ok") {
+            document.title = data.object.name
             setSong(data.object)
             setSongName(data.object.name)
             setSongAuthor(data.object.author)
@@ -88,6 +96,7 @@ export const Player = () => {
   }
 
   const next = () => {
+    document.title = nextSong.name
     setSong(nextSong)
     setSongName(nextSong.name)
     setSongAuthor(nextSong.author)
@@ -96,6 +105,7 @@ export const Player = () => {
   }
 
   const previous = () => {
+    document.title = previousSong.name
     setSong(previousSong)
     setSongName(previousSong.name)
     setSongAuthor(previousSong.author)
@@ -115,7 +125,7 @@ export const Player = () => {
   }
 
   const onSave = () => {
-    console.log(song)
+    setIsLoading(true)
     fetch(`${server}/music/update`, {
       headers: {
         "Content-Type": "application/json",
@@ -131,6 +141,7 @@ export const Player = () => {
       }),
     })
       .then((res) => {
+        setIsLoading(false)
         if (res.status === 401 || res.status === 403) {
           Swal.fire(t("fail"), t("nopermission"), "error")
         } else {
@@ -143,7 +154,30 @@ export const Player = () => {
       })
   }
 
-  const onDelete = () => {}
+  const onDelete = () => {
+    setIsLoading(true)
+    fetch(`${server}/music/delete?id=${song.id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+      method: "DELETE",
+    })
+      .then((res) => {
+        setIsLoading(false)
+        if (res.status === 401 || res.status === 403) {
+          Swal.fire(t("fail"), t("nopermission"), "error")
+        } else {
+          res.json()
+        }
+      })
+      .then((data) => {
+        next()
+        Swal.fire(t("success"), "Thành công!", "success")
+        setIsEditing(false)
+      })
+  }
 
   const convertTime = (totalSeconds) => {
     var minutes = Math.floor(totalSeconds / 60)
@@ -239,20 +273,38 @@ export const Player = () => {
                   src={song.src}
                   onLoadedData={(e) => {
                     let audio = songRef.current
-                    audio.play()
-                    console.log(e.currentTarget.duration)
+                    var promise = audio.play()
                     setDuration(e.currentTarget.duration)
+
+                    if (promise !== undefined) {
+                      promise
+                        .then((_) => {})
+                        .catch((error) => {
+                          setIsPlaying(false)
+                          setPercentage(0)
+                        })
+                    }
                   }}
                   onTimeUpdate={(e) => {
                     setCurrentTime(e.currentTarget.currentTime)
                   }}
                 />
 
-                <span class="material-icons pointer hover:text-cyan-500/50">
+                <span
+                  class="material-icons pointer hover:text-cyan-500/50"
+                  onClick={() => {
+                    setIsOpenSnackbar(true)
+                  }}
+                >
                   shuffle
                 </span>
 
-                <span class="material-icons pointer hover:text-cyan-500/50">
+                <span
+                  class="material-icons pointer hover:text-cyan-500/50"
+                  onClick={() => {
+                    setIsOpenSnackbar(true)
+                  }}
+                >
                   replay
                 </span>
 
@@ -272,6 +324,8 @@ export const Player = () => {
               <p className="p-4 font-bold text-center border-b">
                 {t("information")}
               </p>
+
+              {/* Info */}
               <div className="grid grid-cols-5">
                 <div className="items-center px-4 py-2 font-medium space-y-3 col-span-2">
                   <p className="text-sm  py-2">{t("song_detail.name")}: </p>
@@ -318,6 +372,7 @@ export const Player = () => {
                 </div>
               </div>
 
+              {/* Buttons */}
               <div className="inline-flex items-center justify-end w-full">
                 {isEditing ? (
                   <div
@@ -343,6 +398,31 @@ export const Player = () => {
               </div>
             </div>
           ) : null}
+
+          {/* Loading */}
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={isLoading}
+            className="flex flex-col"
+            // onClick={handleCloseLoading}
+          >
+            <p>Đang tải...</p>
+            <CircularProgress className="mt-4" color="inherit" />
+          </Backdrop>
+
+          {/* Snackbar */}
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={isOpenSnackbar}
+            autoHideDuration={6000}
+            onClose={() => {
+              setIsOpenSnackbar(false)
+            }}
+          >
+            <p className="bg-yellow-200 px-4 py-2 rounded-md">
+              I'm working on it...
+            </p>
+          </Snackbar>
         </>
       ) : null}
     </div>

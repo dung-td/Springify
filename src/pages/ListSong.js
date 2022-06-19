@@ -2,18 +2,24 @@ import React, { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { server } from "../interfaces/server"
+import Backdrop from "@mui/material/Backdrop"
+import CircularProgress from "@mui/material/CircularProgress"
+import Swal from "sweetalert2"
 
 export const ListSong = (props) => {
+  const { t } = useTranslation()
   const [isLogin, setIsLogin] = useState(
     localStorage.getItem("jwt") != null ? true : false
   )
+
   const [songList, setSongList] = useState([])
   const [selectedSongs, setSelectedSongs] = useState([])
-  const { t } = useTranslation()
   const [currentPage, setCurrentPage] = useState(0)
-  const [limit, setLimit] = useState(5)
+  const [limit, setLimit] = useState(10)
   const [pageCount, setPageCount] = useState([])
   const [selectedAll, setSelectedAll] = useState(false)
+  const [keyword, setKeyword] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (selectedAll) {
@@ -32,7 +38,7 @@ export const ListSong = (props) => {
         if (data.status === "ok") {
           // let songs = new Array()
           let length = data.object.length
-          if (length / limit < parseInt(length / limit)) {
+          if (length / limit <= parseInt(length / limit)) {
             length = length / limit
           } else {
             length = length / limit + 1
@@ -43,21 +49,60 @@ export const ListSong = (props) => {
   }, [limit])
 
   useEffect(() => {
-    fetch(`${server}/music/page?page=${currentPage}&limit=${limit}`)
+    setIsLoading(true)
+    fetch(
+      `${server}/music/page?page=${currentPage}&limit=${limit}&name=${keyword}`
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "ok") {
+          setIsLoading(false)
           setSongList(data.object.songs)
+        } else {
+          setIsLoading(false)
         }
       })
-  }, [currentPage, limit])
+  }, [currentPage, limit, keyword])
 
   const _delete = () => {
-    console.log()
+    setIsLoading(true)
+    let stringUrl = server + "/music/delete"
+    let url = new URL(stringUrl)
+    let params = url.searchParams
+
+    selectedSongs.forEach((song) => {
+      params.append("id", song)
+    })
+    let link = url.toString()
+    fetch(`${link}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+      method: "DELETE",
+    })
+      .then((res) => {
+        setIsLoading(false)
+        if (res.status === 401 || res.status === 403) {
+          Swal.fire(t("fail"), t("nopermission"), "error")
+        } else {
+          res.json()
+        }
+      })
+      .then((data) => {
+        Swal.fire(t("success"), "Thành công!", "success").then(() => {
+          window.location.reload()
+        })
+      })
+  }
+
+  const search = () => {
+    console.log(keyword)
   }
 
   return (
-    <div>
+    <div className="">
       <div className="inline-flex items-center justify-between w-full">
         {isLogin ? (
           <div className="inline-flex items-center justify-between w-1/3">
@@ -75,13 +120,22 @@ export const ListSong = (props) => {
           </div>
         ) : null}
 
-        <div class="">
+        <div class="ml-auto inline-flex items-center justify-between w-full h-full md:w-2/5 p-2">
           <input
             type="search"
-            class="block px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+            class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
             placeholder={t("actions.search")}
-            required
+            value={keyword}
+            onChange={(e) => {
+              setKeyword(e.currentTarget.value)
+            }}
           />
+          {/* <div
+            className="w-1/3 bg-cyan-600 ml-2 px-2 py-1.5 h-full rounded-md"
+            onClick={() => search()}
+          >
+            <p className="text-center text-white">{t("actions.search")}</p>
+          </div> */}
         </div>
       </div>
 
@@ -92,17 +146,19 @@ export const ListSong = (props) => {
       </div>
 
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table class="w-full text-sm text-left text-gray-500 table-auto">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th className="px-6 py-3" scope="col">
-                <input
-                  type="checkbox"
-                  onChange={(e) => {
-                    setSelectedAll(!selectedAll)
-                  }}
-                ></input>
-              </th>
+              {isLogin ? (
+                <th className="px-6 py-3" scope="col">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      setSelectedAll(!selectedAll)
+                    }}
+                  ></input>
+                </th>
+              ) : null}
               <th className="px-6 py-3" scope="col">
                 {t("song_detail.name")}
               </th>
@@ -121,43 +177,48 @@ export const ListSong = (props) => {
             {songList.map((song) => {
               return (
                 <tr class="bg-white border-b text-black" key={song.id}>
-                  <th class="px-6 py-4" scope="col">
-                    <input
-                      type="checkbox"
-                      checked={selectedSongs.includes(song.id)}
-                      onClick={(e) => {
-                        if (
-                          !e.target.checked &&
-                          selectedSongs.includes(song.id)
-                        ) {
-                          var array = [...selectedSongs]
-                          let index = array.indexOf(song.id)
-                          if (index !== -1) {
-                            array.splice(index, 1)
-                            setSelectedSongs(array)
+                  {isLogin ? (
+                    <th class="px-6 py-4" scope="col">
+                      <input
+                        type="checkbox"
+                        checked={selectedSongs.includes(song.id)}
+                        onClick={(e) => {
+                          if (
+                            !e.target.checked &&
+                            selectedSongs.includes(song.id)
+                          ) {
+                            var array = [...selectedSongs]
+                            let index = array.indexOf(song.id)
+                            if (index !== -1) {
+                              array.splice(index, 1)
+                              setSelectedSongs(array)
+                            }
                           }
-                        }
-                      }}
-                      onChange={(e) => {
-                        if (
-                          e.target.checked &&
-                          !selectedSongs.includes(song.id)
-                        ) {
-                          setSelectedSongs((prevState) => [
-                            ...prevState,
-                            song.id,
-                          ])
-                        }
-                      }}
-                    ></input>
-                  </th>
-                  <td class="px-6 py-4 font-bold ">{song.name}</td>
+                        }}
+                        onChange={(e) => {
+                          if (
+                            e.target.checked &&
+                            !selectedSongs.includes(song.id)
+                          ) {
+                            setSelectedSongs((prevState) => [
+                              ...prevState,
+                              song.id,
+                            ])
+                          }
+                        }}
+                      ></input>
+                    </th>
+                  ) : null}
 
-                  <td class="px-6 py-4">{song.author}</td>
+                  <td class="text-xs md:text-base px-6 py-4 font-bold ">
+                    {song.name}
+                  </td>
 
-                  <td class="px-6 py-4">{song.genre}</td>
+                  <td class="text-xs md:text-base px-6 py-4">{song.author}</td>
 
-                  <td class="px-6 py-4 space-x-2">
+                  <td class="text-xs md:text-base px-6 py-4">{song.genre}</td>
+
+                  <td class="text-xs md:text-base px-6 py-4 space-x-2">
                     <Link to={`/play/${song.id}`}>
                       <span class="material-icons pointer">play_arrow</span>
                     </Link>
@@ -249,6 +310,16 @@ export const ListSong = (props) => {
           </li>
         </ul>
       </nav>
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+        className="flex flex-col"
+        // onClick={handleCloseLoading}
+      >
+        <p>Đang tải...</p>
+        <CircularProgress className="mt-4" color="inherit" />
+      </Backdrop>
     </div>
   )
 }

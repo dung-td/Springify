@@ -5,7 +5,7 @@ import Backdrop from "@mui/material/Backdrop"
 import CircularProgress from "@mui/material/CircularProgress"
 import Swal from "sweetalert2"
 
-export const AddSong = (props) => {
+export const AddSong = () => {
   const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [songName, setSongName] = useState("")
@@ -14,12 +14,8 @@ export const AddSong = (props) => {
   const [songSrc, setSongSrc] = useState()
   const [songThumbnail, setSongThumbnail] = useState()
 
-  const back = () => {
-    props.callback("goback", "")
-  }
-
   const add = () => {
-    // setIsLoading(true)
+    setIsLoading(true)
     let songData = new FormData()
     songData.append("src", songSrc)
     songData.append("name", songName)
@@ -31,17 +27,16 @@ export const AddSong = (props) => {
       body: songData,
       headers: {
         Accept: "application/json",
-        "Content-type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       },
     })
       .then((res) => res.json())
       .then((data) => {
         setIsLoading(false)
-        if (data.status == "ok") {
+        if (data.status === "ok") {
           Swal.fire("Thành công!", "Bài hát đã được thêm!", "success").then(
             () => {
-              back()
+              window.location.href = "/"
             }
           )
         } else {
@@ -127,7 +122,7 @@ export const AddSong = (props) => {
         <div className="flex justify-end items-center mt-2">
           <div
             className="pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/4"
-            onClick={() => back()}
+            onClick={() => (window.location.href = "/")}
           >
             <p className="text-center">{t("actions.back")}</p>
           </div>

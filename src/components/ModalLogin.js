@@ -129,6 +129,9 @@ const ModalLogin = () => {
           </button>
         </div>
       </div>
+
+      <p className="text-center font-bold">Hey, this is an admin feature!</p>
+      <p className="text-center italic">🎵 Keep enjoying the music 🎵</p>
     </div>
   )
 }

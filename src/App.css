@@ -5,11 +5,15 @@
 }
 
 .grid-player {
-  max-width: 400px !important;
+  max-width: 400px;
 }
 
 .grid-600 {
   max-width: 600px !important;
+}
+
+.grid-full {
+  max-width: 1200px !important;
 }
 
 .slider-container {
@@ -29,6 +33,7 @@
   cursor: pointer;
   opacity: 1;
   margin: 0 auto;
+  border-radius: 10px;
 }
 
 .range::-webkit-slider-thumb {
@@ -48,7 +53,7 @@
   display: block;
   position: absolute;
   border-radius: 10px;
-  top: 65%;
+  top: 63%;
   transform: translateY(-50%);
   z-index: 3;
   user-select: none;
