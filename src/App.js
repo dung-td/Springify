@@ -86,7 +86,7 @@ function App() {
 
       <span className="text-md text-center mt-4 mb-2">
         © 2022{" "}
-        <a className="text-bold underline" href="https://facebook.com/tngdcdng">
+        <a className="text-bold underline" href="https://github.com/dung-td/">
           dungtd
         </a>
         . All Rights Reserved{" "}
