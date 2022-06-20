@@ -29,6 +29,7 @@ export const Player = () => {
   const [songName, setSongName] = useState()
   const [songAuthor, setSongAuthor] = useState()
   const [songGenre, setSongGenre] = useState()
+  const [updateAt, setUpdateAt] = useState()
   const songRef = useRef()
   const { t } = useTranslation()
 
@@ -50,11 +51,13 @@ export const Player = () => {
         .then((data) => {
           setIsLoading(false)
           if (data.status === "ok") {
+            console.log(data.object)
             document.title = data.object.name
             setSong(data.object)
             setSongName(data.object.name)
             setSongAuthor(data.object.author)
             setSongGenre(data.object.genre)
+            setUpdateAt(data.object.updateAt)
           }
         })
     }
@@ -62,7 +65,6 @@ export const Player = () => {
 
   // Get previous and next
   useEffect(() => {
-    console.log(song)
     if (song != null) {
       fetch(`${server}/music/getRelated?id=${song.id}`)
         .then((res) => res.json())
@@ -101,6 +103,7 @@ export const Player = () => {
     setSongName(nextSong.name)
     setSongAuthor(nextSong.author)
     setSongGenre(nextSong.genre)
+    setUpdateAt(nextSong.updateAt)
     setIsPlaying(true)
   }
 
@@ -110,11 +113,11 @@ export const Player = () => {
     setSongName(previousSong.name)
     setSongAuthor(previousSong.author)
     setSongGenre(previousSong.genre)
+    setUpdateAt(nextSong.updateAt)
     setIsPlaying(true)
   }
 
   const onChange = (value) => {
-    console.log(value)
     const audio = songRef.current
 
     audio.currentTime = Math.round((value / 100) * duration)
@@ -141,16 +144,16 @@ export const Player = () => {
       }),
     })
       .then((res) => {
+        res.json()
         setIsLoading(false)
+        setIsEditing(false)
         if (res.status === 401 || res.status === 403) {
           Swal.fire(t("fail"), t("nopermission"), "error")
-        } else {
-          res.json()
         }
       })
       .then((data) => {
+        setUpdateAt(new Date())
         Swal.fire(t("success"), "Thành công!", "success")
-        setIsEditing(false)
       })
   }
 
@@ -366,7 +369,7 @@ export const Player = () => {
                   <div className="w-full">
                     <p className="">
                       {" "}
-                      {moment(song.updateAt).format("hh:mm DD/MM/YYYY")}
+                      {moment(updateAt).format("hh:mm DD/MM/YYYY")}
                     </p>
                   </div>
                 </div>
