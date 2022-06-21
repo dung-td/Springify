@@ -216,7 +216,9 @@ export const ListSong = (props) => {
 
                   <td class="text-xs md:text-base px-6 py-4">{song.author}</td>
 
-                  <td class="text-xs md:text-base px-6 py-4">{song.genre}</td>
+                  <td class="text-xs md:text-base px-6 py-4">
+                    {song.genre.name}
+                  </td>
 
                   <td class="text-xs md:text-base px-6 py-4 space-x-2">
                     <Link to={`/play/${song.id}`}>
@@ -275,7 +277,7 @@ export const ListSong = (props) => {
           </li>
           {pageCount.map((page) => {
             return (
-              <li>
+              <li key={page}>
                 {currentPage === page ? (
                   <p
                     class="cursor-pointer py-2 px-3 text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700"

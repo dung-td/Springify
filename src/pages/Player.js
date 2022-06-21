@@ -30,6 +30,7 @@ export const Player = () => {
   const [songAuthor, setSongAuthor] = useState()
   const [songGenre, setSongGenre] = useState()
   const [updateAt, setUpdateAt] = useState()
+  const [genreList, setGenreList] = useState([])
   const songRef = useRef()
   const { t } = useTranslation()
 
@@ -56,7 +57,7 @@ export const Player = () => {
             setSong(data.object)
             setSongName(data.object.name)
             setSongAuthor(data.object.author)
-            setSongGenre(data.object.genre)
+            setSongGenre(data.object.genre.id)
             setUpdateAt(data.object.updateAt)
           }
         })
@@ -76,6 +77,15 @@ export const Player = () => {
         })
     }
   }, [song])
+
+  // Get Genre data
+  useEffect(() => {
+    fetch(`${server}/music/genre/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        setGenreList(data.object)
+      })
+  }, [])
 
   const play = () => {
     const audio = songRef.current
@@ -102,7 +112,7 @@ export const Player = () => {
     setSong(nextSong)
     setSongName(nextSong.name)
     setSongAuthor(nextSong.author)
-    setSongGenre(nextSong.genre)
+    setSongGenre(nextSong.genre.id)
     setUpdateAt(nextSong.updateAt)
     setIsPlaying(true)
   }
@@ -112,7 +122,7 @@ export const Player = () => {
     setSong(previousSong)
     setSongName(previousSong.name)
     setSongAuthor(previousSong.author)
-    setSongGenre(previousSong.genre)
+    setSongGenre(previousSong.genre.id)
     setUpdateAt(nextSong.updateAt)
     setIsPlaying(true)
   }
@@ -357,7 +367,7 @@ export const Player = () => {
                     }}
                     disabled={!isEditing}
                   />
-                  <input
+                  {/* <input
                     class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                     type="text"
                     value={songGenre}
@@ -365,7 +375,24 @@ export const Player = () => {
                       setSongGenre(e.currentTarget.value)
                     }}
                     disabled={!isEditing}
-                  />
+                  /> */}
+                  <select
+                    disabled={!isEditing}
+                    value={songGenre}
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => {
+                      console.log(e.currentTarget.value)
+                      setSongGenre(e.currentTarget.value)
+                    }}
+                  >
+                    {genreList.map((genre) => {
+                      return (
+                        <option key={genre.id} value={genre.id}>
+                          <p class="dropdown-item pointer">{genre.name}</p>
+                        </option>
+                      )
+                    })}
+                  </select>
                   <div className="w-full">
                     <p className="">
                       {" "}

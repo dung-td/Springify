@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { server } from "../interfaces/server"
 import Backdrop from "@mui/material/Backdrop"
@@ -13,6 +13,16 @@ export const AddSong = () => {
   const [songGenre, setSongGenre] = useState("")
   const [songSrc, setSongSrc] = useState()
   const [songThumbnail, setSongThumbnail] = useState()
+  const [genreList, setGenreList] = useState([])
+
+  // Get Genre data
+  useEffect(() => {
+    fetch(`${server}/music/genre/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        setGenreList(data.object)
+      })
+  }, [])
 
   const add = () => {
     setIsLoading(true)
@@ -80,15 +90,22 @@ export const AddSong = () => {
 
         <div className="d-flex align-items-center mt-2">
           <p className="mb-0 me-2">{t("song_detail.genre")}:</p>
-          <input
-            class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
-            type="text"
-            defaultValue={songGenre}
+          <select
+            value={songGenre}
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             onChange={(e) => {
-              e.preventDefault()
+              console.log(e.currentTarget.value)
               setSongGenre(e.currentTarget.value)
             }}
-          />
+          >
+            {genreList.map((genre) => {
+              return (
+                <option key={genre.id} value={genre.id}>
+                  <p class="dropdown-item pointer">{genre.name}</p>
+                </option>
+              )
+            })}
+          </select>
         </div>
 
         <div className="mt-2">
