@@ -35,5 +35,10 @@
   "fail": "Fail",
   "success": "Success",
   "actionsuccess": "Your changes has been saved!",
-  "nopermission": "You don't have permission to do this!"
+  "nopermission": "You don't have permission to do this!",
+  "useExistAuthor": "Use exist author list",
+  "addNewAuthor": "Add new author",
+  "useExistGenre": "Use exist genre list",
+  "addNewGenre": "Add new genre",
+  "all": "All"
 }

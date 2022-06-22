@@ -31,6 +31,7 @@ export const Player = () => {
   const [songGenre, setSongGenre] = useState()
   const [updateAt, setUpdateAt] = useState()
   const [genreList, setGenreList] = useState([])
+  const [authorList, setAuthorList] = useState([])
   const songRef = useRef()
   const { t } = useTranslation()
 
@@ -56,7 +57,7 @@ export const Player = () => {
             document.title = data.object.name
             setSong(data.object)
             setSongName(data.object.name)
-            setSongAuthor(data.object.author)
+            setSongAuthor(data.object.author.id)
             setSongGenre(data.object.genre.id)
             setUpdateAt(data.object.updateAt)
           }
@@ -80,10 +81,20 @@ export const Player = () => {
 
   // Get Genre data
   useEffect(() => {
-    fetch(`${server}/music/genre/all`)
+    fetch(`${server}/genre/all`)
       .then((res) => res.json())
       .then((data) => {
         setGenreList(data.object)
+      })
+  }, [])
+
+  // Get Author data
+  useEffect(() => {
+    fetch(`${server}/author/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        setAuthorList(data.object)
+        console.log(data.object)
       })
   }, [])
 
@@ -111,7 +122,7 @@ export const Player = () => {
     document.title = nextSong.name
     setSong(nextSong)
     setSongName(nextSong.name)
-    setSongAuthor(nextSong.author)
+    setSongAuthor(nextSong.author.id)
     setSongGenre(nextSong.genre.id)
     setUpdateAt(nextSong.updateAt)
     setIsPlaying(true)
@@ -121,7 +132,7 @@ export const Player = () => {
     document.title = previousSong.name
     setSong(previousSong)
     setSongName(previousSong.name)
-    setSongAuthor(previousSong.author)
+    setSongAuthor(previousSong.author.id)
     setSongGenre(previousSong.genre.id)
     setUpdateAt(nextSong.updateAt)
     setIsPlaying(true)
@@ -252,7 +263,7 @@ export const Player = () => {
               </div>
               <div>
                 <p className="text-center font-normal text-sm mt-2 mb-2">
-                  {song.author}
+                  {song.author.name}
                 </p>
               </div>
               <div className="inline-flex items-center justify-between w-full p-2">
@@ -341,14 +352,14 @@ export const Player = () => {
               {/* Info */}
               <div className="grid grid-cols-5">
                 <div className="items-center px-4 py-2 font-medium space-y-3 col-span-2">
-                  <p className="text-sm  py-2">{t("song_detail.name")}: </p>
-                  <p className="text-sm  py-2">{t("song_detail.author")}: </p>
-                  <p className="text-sm  py-2">{t("song_detail.genre")}: </p>
-                  <p className="text-sm  py-2">
+                  <p className="text-sm py-2">{t("song_detail.name")}: </p>
+                  <p className="text-sm py-2">{t("song_detail.author")}: </p>
+                  <p className="text-sm py-2">{t("song_detail.genre")}: </p>
+                  <p className="text-sm py-2">
                     {t("song_detail.last_updated")}:{" "}
                   </p>
                 </div>
-                <div className="items-center px-4 py-2 font-bold space-y-3 col-span-3">
+                <div className="items-center px-4 py-2 font-bold space-y-2 col-span-3">
                   <input
                     class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                     type="text"
@@ -358,24 +369,23 @@ export const Player = () => {
                     }}
                     disabled={!isEditing}
                   />
-                  <input
-                    class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
-                    type="text"
+                  <select
+                    disabled={!isEditing}
                     value={songAuthor}
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
+                      console.log(e.currentTarget.value)
                       setSongAuthor(e.currentTarget.value)
                     }}
-                    disabled={!isEditing}
-                  />
-                  {/* <input
-                    class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
-                    type="text"
-                    value={songGenre}
-                    onChange={(e) => {
-                      setSongGenre(e.currentTarget.value)
-                    }}
-                    disabled={!isEditing}
-                  /> */}
+                  >
+                    {authorList.map((author) => {
+                      return (
+                        <option key={author.id} value={author.id}>
+                          <p class="dropdown-item pointer">{author.name}</p>
+                        </option>
+                      )
+                    })}
+                  </select>
                   <select
                     disabled={!isEditing}
                     value={songGenre}
@@ -393,7 +403,7 @@ export const Player = () => {
                       )
                     })}
                   </select>
-                  <div className="w-full">
+                  <div className="w-full py-2">
                     <p className="">
                       {" "}
                       {moment(updateAt).format("hh:mm DD/MM/YYYY")}

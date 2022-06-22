@@ -81,7 +81,11 @@ function App() {
       <Routes>
         <Route path="/play/:id" element={<Player />} />
         <Route path="/" element={<ListSong />} />
-        <Route path="/add" element={<AddSong />} />
+        {isLogin ? (
+          <>
+            <Route path="/add" element={<AddSong />} />
+          </>
+        ) : null}
       </Routes>
 
       <span className="text-md text-center mt-4 mb-2">

@@ -35,5 +35,10 @@
   "fail": "Thất bại!",
   "success": "Thành công!",
   "actionsuccess": "Thực hiện thao tác thành công!",
-  "nopermission": "Bạn không có quyền thực hiện chức năng này!"
+  "nopermission": "Bạn không có quyền thực hiện chức năng này!",
+  "useExistAuthor": "Sử dụng danh sách ca sĩ có sẵn",
+  "addNewAuthor": "Thêm ca sĩ mới",
+  "useExistGenre": "Sử dụng danh sách loại nhạc có sẵn",
+  "addNewGenre": "Thêm mới thể loại nhạc",
+  "all": "Tất cả"
 }

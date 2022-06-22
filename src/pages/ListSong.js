@@ -19,7 +19,11 @@ export const ListSong = (props) => {
   const [pageCount, setPageCount] = useState([])
   const [selectedAll, setSelectedAll] = useState(false)
   const [keyword, setKeyword] = useState("")
+  const [author, setAuthor] = useState("")
+  const [genre, setGenre] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [genreList, setGenreList] = useState([])
+  const [authorList, setAuthorList] = useState([])
 
   useEffect(() => {
     if (selectedAll) {
@@ -48,10 +52,28 @@ export const ListSong = (props) => {
       })
   }, [limit])
 
+  // Get Genre data
+  useEffect(() => {
+    fetch(`${server}/genre/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        setGenreList(data.object)
+      })
+  }, [])
+
+  // Get Author data
+  useEffect(() => {
+    fetch(`${server}/author/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        setAuthorList(data.object)
+      })
+  }, [])
+
   useEffect(() => {
     setIsLoading(true)
     fetch(
-      `${server}/music/page?page=${currentPage}&limit=${limit}&name=${keyword}`
+      `${server}/music/page?page=${currentPage}&limit=${limit}&name=${keyword}&author=${author}&genre=${genre}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -62,7 +84,7 @@ export const ListSong = (props) => {
           setIsLoading(false)
         }
       })
-  }, [currentPage, limit, keyword])
+  }, [currentPage, limit, keyword, author, genre])
 
   const _delete = () => {
     setIsLoading(true)
@@ -97,30 +119,70 @@ export const ListSong = (props) => {
       })
   }
 
-  const search = () => {
-    console.log(keyword)
-  }
-
   return (
-    <div className="">
-      <div className="inline-flex items-center justify-between w-full">
-        {isLogin ? (
-          <div className="inline-flex items-center justify-between w-1/3">
-            <div className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2">
-              <Link to="/add">
-                <p className="text-center">{t("actions.add")}</p>
-              </Link>
-            </div>
-            <div
-              className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
-              onClick={() => _delete()}
-            >
-              <p className="text-center">{t("actions.delete")}</p>
-            </div>
+    <div className="mt-4">
+      {isLogin ? (
+        <div className="inline-flex items-center justify-between w-full">
+          <div className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 mr-4 w-1/2">
+            <Link to="/add">
+              <p className="text-center">{t("actions.add")}</p>
+            </Link>
           </div>
-        ) : null}
+          <div
+            className="cursor-pointer rounded-md border border-gray-200 p-2 mb-2 w-1/2"
+            onClick={() => _delete()}
+          >
+            <p className="text-center">{t("actions.delete")}</p>
+          </div>
+        </div>
+      ) : null}
 
-        <div class="ml-auto inline-flex items-center justify-between w-full h-full md:w-2/5 p-2">
+      <div className="w-full">
+        <div className="inline-flex items-center justify-between w-full h-full md:w-2/12 p-2">
+          <select
+            value={genre}
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+            onChange={(e) => {
+              console.log(e.currentTarget.value)
+              setGenre(e.currentTarget.value)
+            }}
+          >
+            <option key={"all"} value="">
+              <p class="dropdown-item pointer">{t("all")}</p>
+            </option>
+            {genreList.map((genre) => {
+              return (
+                <option key={genre.id} value={genre.id}>
+                  <p class="dropdown-item pointer">{genre.name}</p>
+                </option>
+              )
+            })}
+          </select>
+        </div>
+
+        <div className="inline-flex items-center justify-between w-full h-full md:w-2/12 p-2">
+          <select
+            value={author}
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+            onChange={(e) => {
+              console.log(e.currentTarget.value)
+              setAuthor(e.currentTarget.value)
+            }}
+          >
+            <option key={"all"} value="">
+              <p class="dropdown-item pointer">{t("all")}</p>
+            </option>
+            {authorList.map((author) => {
+              return (
+                <option key={author.id} value={author.id}>
+                  <p class="dropdown-item pointer">{author.name}</p>
+                </option>
+              )
+            })}
+          </select>
+        </div>
+
+        <div class="inline-flex items-center justify-between w-full h-full md:w-8/12 p-2">
           <input
             type="search"
             class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
@@ -130,12 +192,6 @@ export const ListSong = (props) => {
               setKeyword(e.currentTarget.value)
             }}
           />
-          {/* <div
-            className="w-1/3 bg-cyan-600 ml-2 px-2 py-1.5 h-full rounded-md"
-            onClick={() => search()}
-          >
-            <p className="text-center text-white">{t("actions.search")}</p>
-          </div> */}
         </div>
       </div>
 
@@ -214,7 +270,9 @@ export const ListSong = (props) => {
                     {song.name}
                   </td>
 
-                  <td class="text-xs md:text-base px-6 py-4">{song.author}</td>
+                  <td class="text-xs md:text-base px-6 py-4">
+                    {song.author.name}
+                  </td>
 
                   <td class="text-xs md:text-base px-6 py-4">
                     {song.genre.name}
