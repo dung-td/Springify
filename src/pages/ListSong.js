@@ -36,12 +36,13 @@ export const ListSong = (props) => {
   }, [selectedAll])
 
   useEffect(() => {
-    fetch(`${server}/music/all`)
+    fetch(
+      `${server}/music/count?name=${keyword}&author=${author}&genre=${genre}`
+    )
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === "ok") {
-          // let songs = new Array()
-          let length = data.object.length
+        if (data.status === "OK") {
+          let length = data.object
           if (length / limit <= parseInt(length / limit)) {
             length = length / limit
           } else {
@@ -50,7 +51,7 @@ export const ListSong = (props) => {
           setPageCount(Array.from(Array(parseInt(length)).keys()))
         }
       })
-  }, [limit])
+  }, [limit, keyword, author, genre])
 
   // Get Genre data
   useEffect(() => {
@@ -73,7 +74,7 @@ export const ListSong = (props) => {
   useEffect(() => {
     setIsLoading(true)
     fetch(
-      `${server}/music/page?page=${currentPage}&limit=${limit}&name=${keyword}&author=${author}&genre=${genre}`
+      `${server}/music/page?page=${currentPage}&limit=${limit}&&name=${keyword}&author=${author}&genre=${genre}`
     )
       .then((res) => res.json())
       .then((data) => {

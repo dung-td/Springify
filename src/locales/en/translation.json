@@ -40,5 +40,6 @@
   "addNewAuthor": "Add new author",
   "useExistGenre": "Use exist genre list",
   "addNewGenre": "Add new genre",
-  "all": "All"
+  "all": "All",
+  "loading": "Loading"
 }

@@ -220,7 +220,7 @@ export const AddSong = () => {
             className="mb-0 me-2 p-2 text-sm italic hover:underline hover:cursor-pointer"
             onClick={() => setIsAddingNewAuthor(!isAddingNewAuthor)}
           >
-            {isAddingNewAuthor ? t(`addNewAuthor`) : t(`useExistAuthor`)}
+            {!isAddingNewAuthor ? t(`addNewAuthor`) : t(`useExistAuthor`)}
           </p>
         </div>
 
@@ -270,7 +270,7 @@ export const AddSong = () => {
             className="mb-0 me-2 p-2 text-sm italic hover:underline hover:cursor-pointer"
             onClick={() => setIsAddingNewGenre(!isAddingNewGenre)}
           >
-            {isAddingNewGenre ? t(`addNewGenre`) : t(`useExistGenre`)}
+            {!isAddingNewGenre ? t(`addNewGenre`) : t(`useExistGenre`)}
           </p>
         </div>
 

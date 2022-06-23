@@ -9,9 +9,11 @@ import Swal from "sweetalert2"
 import Backdrop from "@mui/material/Backdrop"
 import CircularProgress from "@mui/material/CircularProgress"
 import Snackbar from "@mui/material/Snackbar"
+import Tooltip from "@mui/material/Tooltip"
 
 export const Player = () => {
   let { id } = useParams()
+
   const [isLogin, setIsLogin] = useState(
     localStorage.getItem("jwt") != null ? true : false
   )
@@ -23,9 +25,18 @@ export const Player = () => {
   const [isMuted, setIsMuted] = useState(false)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
+  const [songCount, setSongCount] = useState(0)
   const [song, setSong] = useState()
   const [nextSong, setNextSong] = useState()
   const [previousSong, setPreviousSong] = useState()
+  const [repeat, setRepeat] = useState(
+    localStorage.getItem("repeat") === "true" ? true : false
+  )
+  const [shuffle, setShuffle] = useState(
+    localStorage.getItem("shuffle") === "true" ? true : false
+  )
+  const [shuffleSongs, setShuffleSongs] = useState([])
+  const [playedSong, setPlayedSong] = useState([])
   const [songName, setSongName] = useState()
   const [songAuthor, setSongAuthor] = useState()
   const [songGenre, setSongGenre] = useState()
@@ -48,6 +59,8 @@ export const Player = () => {
   useEffect(() => {
     setIsLoading(true)
     if (id !== undefined) {
+      localStorage.setItem("playing", id)
+
       fetch(`${server}/music/get?id=${id}`)
         .then((res) => res.json())
         .then((data) => {
@@ -60,6 +73,10 @@ export const Player = () => {
             setSongAuthor(data.object.author.id)
             setSongGenre(data.object.genre.id)
             setUpdateAt(data.object.updateAt)
+          } else {
+            Swal.fire("Ooops!", "Something went wrong :(", "info").then(() => {
+              window.location.href = "/"
+            })
           }
         })
     }
@@ -67,15 +84,30 @@ export const Player = () => {
 
   // Get previous and next
   useEffect(() => {
-    if (song != null) {
-      fetch(`${server}/music/getRelated?id=${song.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status == "ok") {
-            setNextSong(data.object[0])
-            setPreviousSong(data.object[1])
-          }
-        })
+    if (shuffle && shuffleSongs.length > 0) {
+      let index = shuffleSongs.findIndex((s) => s.id === song.id)
+      console.log(index)
+      if (index === 0) {
+        setPreviousSong(shuffleSongs[shuffleSongs.length - 1])
+      } else {
+        setPreviousSong(shuffleSongs[index + 1])
+      }
+      if (index === shuffleSongs.length - 1) {
+        setNextSong(shuffleSongs[0])
+      } else {
+        setNextSong(shuffleSongs[index + 1])
+      }
+    } else {
+      if (song != null) {
+        fetch(`${server}/music/getRelated?id=${song.id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "ok") {
+              setNextSong(data.object[0])
+              setPreviousSong(data.object[1])
+            }
+          })
+      }
     }
   }, [song])
 
@@ -98,6 +130,43 @@ export const Player = () => {
       })
   }, [])
 
+  // Get songs count
+  useEffect(() => {
+    fetch(`${server}/music/count`)
+      .then((res) => res.json())
+      .then((data) => {
+        setSongCount(data.object)
+      })
+  }, [])
+
+  // Get shuffle
+  useEffect(() => {
+    if (shuffle) {
+      setIsLoading(true)
+      fetch(`${server}/music/all?shuffle=true`)
+        .then((res) => res.json())
+        .then((data) => {
+          setIsLoading(false)
+          setShuffleSongs(data.object)
+          console.log(data.object)
+          if (song != null) {
+            let index = shuffleSongs.findIndex((s) => s.id === song.id)
+            console.log(index)
+            if (index === 0) {
+              setPreviousSong(shuffleSongs[shuffleSongs.length - 1])
+            } else {
+              setPreviousSong(shuffleSongs[index + 1])
+            }
+            if (index === shuffleSongs.length - 1) {
+              setNextSong(shuffleSongs[0])
+            } else {
+              setNextSong(shuffleSongs[index + 1])
+            }
+          }
+        })
+    }
+  }, [shuffle])
+
   const play = () => {
     const audio = songRef.current
 
@@ -119,17 +188,43 @@ export const Player = () => {
   }
 
   const next = () => {
-    document.title = nextSong.name
-    setSong(nextSong)
-    setSongName(nextSong.name)
-    setSongAuthor(nextSong.author.id)
-    setSongGenre(nextSong.genre.id)
-    setUpdateAt(nextSong.updateAt)
-    setIsPlaying(true)
+    if (!repeat || (repeat && playedSong.length < songCount)) {
+      document.title = nextSong.name
+      setPlayedSong((prevState) => [...prevState, song.id])
+      localStorage.setItem("playing", nextSong.id)
+      setSong(nextSong)
+      setSongName(nextSong.name)
+      setSongAuthor(nextSong.author.id)
+      setSongGenre(nextSong.genre.id)
+      setUpdateAt(nextSong.updateAt)
+      setIsPlaying(true)
+    } else {
+      Swal.fire({
+        title: "Oops!",
+        text: "That's the end of your music, would you like to listen all again?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, play it!",
+        cancelButtonText: "No, back to list songs!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setPlayedSong([])
+          window.location.reload()
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          window.location.href = "/"
+        }
+      })
+    }
   }
 
   const previous = () => {
     document.title = previousSong.name
+    var array = [...playedSong]
+    array.pop()
+    setPlayedSong(array)
+    localStorage.setItem("playing", previousSong.id)
     setSong(previousSong)
     setSongName(previousSong.name)
     setSongAuthor(previousSong.author.id)
@@ -314,30 +409,48 @@ export const Player = () => {
                   }}
                 />
 
-                <span
-                  class="material-icons pointer hover:text-cyan-500/50"
-                  onClick={() => {
-                    setIsOpenSnackbar(true)
-                  }}
-                >
-                  shuffle
-                </span>
+                <Tooltip title="Shuffle">
+                  <div>
+                    <span
+                      class={`material-icons pointer hover:text-cyan-500/50 ${
+                        shuffle ? "text-cyan-500/50" : ""
+                      }`}
+                      onClick={() => {
+                        localStorage.setItem("shuffle", !shuffle)
+                        setShuffle(!shuffle)
+                      }}
+                    >
+                      shuffle
+                    </span>
+                  </div>
+                </Tooltip>
 
-                <span
-                  class="material-icons pointer hover:text-cyan-500/50"
-                  onClick={() => {
-                    setIsOpenSnackbar(true)
-                  }}
-                >
-                  replay
-                </span>
+                <Tooltip title="Repeat all">
+                  <div>
+                    <span
+                      class={`material-icons pointer hover:text-cyan-500/50 ${
+                        repeat ? "text-cyan-500/50" : ""
+                      }`}
+                      onClick={() => {
+                        localStorage.setItem("repeat", !repeat)
+                        setRepeat(!repeat)
+                      }}
+                    >
+                      replay
+                    </span>
+                  </div>
+                </Tooltip>
 
-                <span
-                  class="material-icons pointer hover:text-cyan-500/50"
-                  onClick={() => mute()}
-                >
-                  {isMuted ? "volume_mute" : "volume_up"}
-                </span>
+                <Tooltip title={isMuted ? "volume_mute" : "volume_up"}>
+                  <div>
+                    <span
+                      class="material-icons pointer hover:text-cyan-500/50"
+                      onClick={() => mute()}
+                    >
+                      {isMuted ? "volume_mute" : "volume_up"}
+                    </span>
+                  </div>
+                </Tooltip>
               </div>
             </div>
           </div>
@@ -446,7 +559,7 @@ export const Player = () => {
             className="flex flex-col"
             // onClick={handleCloseLoading}
           >
-            <p>Đang tải...</p>
+            <p>Loading...</p>
             <CircularProgress className="mt-4" color="inherit" />
           </Backdrop>
 

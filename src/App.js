@@ -80,6 +80,7 @@ function App() {
 
       <Routes>
         <Route path="/play/:id" element={<Player />} />
+        <Route path="/play" element={<Player />} />
         <Route path="/" element={<ListSong />} />
         {isLogin ? (
           <>
@@ -90,7 +91,10 @@ function App() {
 
       <span className="text-md text-center mt-4 mb-2">
         © 2022{" "}
-        <a className="text-bold underline" href="https://github.com/dung-td/">
+        <a
+          className="text-bold underline"
+          href="https://github.com/dung-td/Springify"
+        >
           dungtd
         </a>
         . All Rights Reserved{" "}
