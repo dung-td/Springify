@@ -142,19 +142,19 @@ export const ListSong = (props) => {
         <div className="inline-flex items-center justify-between w-full h-full md:w-2/12 p-2">
           <select
             value={genre}
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
             onChange={(e) => {
               console.log(e.currentTarget.value)
               setGenre(e.currentTarget.value)
             }}
           >
             <option key={"all"} value="">
-              <p class="dropdown-item pointer">{t("all")}</p>
+              {t("all")}
             </option>
             {genreList.map((genre) => {
               return (
                 <option key={genre.id} value={genre.id}>
-                  <p class="dropdown-item pointer">{genre.name}</p>
+                  {genre.name}
                 </option>
               )
             })}
@@ -164,29 +164,29 @@ export const ListSong = (props) => {
         <div className="inline-flex items-center justify-between w-full h-full md:w-2/12 p-2">
           <select
             value={author}
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
             onChange={(e) => {
               console.log(e.currentTarget.value)
               setAuthor(e.currentTarget.value)
             }}
           >
             <option key={"all"} value="">
-              <p class="dropdown-item pointer">{t("all")}</p>
+              {t("all")}
             </option>
             {authorList.map((author) => {
               return (
                 <option key={author.id} value={author.id}>
-                  <p class="dropdown-item pointer">{author.name}</p>
+                  {author.name}
                 </option>
               )
             })}
           </select>
         </div>
 
-        <div class="inline-flex items-center justify-between w-full h-full md:w-8/12 p-2">
+        <div className="inline-flex items-center justify-between w-full h-full md:w-8/12 p-2">
           <input
             type="search"
-            class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+            className="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
             placeholder={t("actions.search")}
             value={keyword}
             onChange={(e) => {
@@ -202,9 +202,9 @@ export const ListSong = (props) => {
         </p>
       </div>
 
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500 table-auto">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left text-gray-500 table-auto">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               {isLogin ? (
                 <th className="px-6 py-3" scope="col">
@@ -225,17 +225,23 @@ export const ListSong = (props) => {
               <th className="px-6 py-3" scope="col">
                 {t("song_detail.genre")}
               </th>
-              <th className="px-6 py-3" scope="col">
-                {t("action")}
-              </th>
+              {isLogin ? (
+                <th className="px-6 py-3" scope="col">
+                  {t("action")}
+                </th>
+              ) : null}
             </tr>
           </thead>
           <tbody>
             {songList.map((song) => {
               return (
-                <tr class="bg-white border-b text-black" key={song.id}>
+                <tr
+                  className="bg-white border-b text-black hover:bg-gray-200 hover:cursor-pointer"
+                  key={song.id}
+                  // onClick={() => (window.location.href = "/play/" + song.id)}
+                >
                   {isLogin ? (
-                    <th class="px-6 py-4" scope="col">
+                    <th className="px-6 py-4" scope="col">
                       <input
                         type="checkbox"
                         checked={selectedSongs.includes(song.id)}
@@ -267,28 +273,30 @@ export const ListSong = (props) => {
                     </th>
                   ) : null}
 
-                  <td class="text-xs md:text-base px-6 py-4 font-bold ">
+                  <td className="text-xs md:text-base px-6 py-4 font-bold ">
                     {song.name}
                   </td>
 
-                  <td class="text-xs md:text-base px-6 py-4">
+                  <td className="text-xs md:text-base px-6 py-4">
                     {song.author.name}
                   </td>
 
-                  <td class="text-xs md:text-base px-6 py-4">
+                  <td className="text-xs md:text-base px-6 py-4">
                     {song.genre.name}
                   </td>
 
-                  <td class="text-xs md:text-base px-6 py-4 space-x-2">
-                    <Link to={`/play/${song.id}`}>
-                      <span class="material-icons pointer">play_arrow</span>
-                    </Link>
-                    {isLogin ? (
+                  {isLogin ? (
+                    <td className="text-xs md:text-base px-6 py-4 space-x-2">
                       <Link to={`/play/${song.id}`}>
-                        <span class="material-icons pointer">edit</span>
+                        <span className="material-icons pointer">
+                          play_arrow
+                        </span>
                       </Link>
-                    ) : null}
-                  </td>
+                      <Link to={`/play/${song.id}`}>
+                        <span className="material-icons pointer">edit</span>
+                      </Link>
+                    </td>
+                  ) : null}
                 </tr>
               )
             })}
@@ -309,7 +317,7 @@ export const ListSong = (props) => {
         <div>
           <select
             defaultValue={limit}
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
             onChange={(e) => {
               setLimit(e.currentTarget.value)
             }}
@@ -323,10 +331,10 @@ export const ListSong = (props) => {
       </div>
 
       <nav className="text-center">
-        <ul class="inline-flex -space-x-px items-center">
+        <ul className="inline-flex -space-x-px items-center">
           <li>
             <p
-              class="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               onClick={() => {
                 setCurrentPage(pageCount[0])
               }}
@@ -339,7 +347,7 @@ export const ListSong = (props) => {
               <li key={page}>
                 {currentPage === page ? (
                   <p
-                    class="cursor-pointer py-2 px-3 text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700"
+                    className="cursor-pointer py-2 px-3 text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700"
                     onClick={() => {
                       setCurrentPage(page)
                     }}
@@ -348,7 +356,7 @@ export const ListSong = (props) => {
                   </p>
                 ) : (
                   <p
-                    class="cursor-pointer py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                    className="cursor-pointer py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                     onClick={() => {
                       setCurrentPage(page)
                     }}
@@ -362,7 +370,7 @@ export const ListSong = (props) => {
 
           <li>
             <p
-              class="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="cursor-pointer py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               onClick={() => {
                 setCurrentPage(pageCount[pageCount.length - 1])
               }}
@@ -379,7 +387,7 @@ export const ListSong = (props) => {
         className="flex flex-col"
         // onClick={handleCloseLoading}
       >
-        <p>Đang tải...</p>
+        <p>{t("loading")}</p>
         <CircularProgress className="mt-4" color="inherit" />
       </Backdrop>
     </div>

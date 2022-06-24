@@ -37,14 +37,22 @@ export const AddSong = () => {
   }, [isAddingNewAuthor])
 
   const add = () => {
+    console.log(songThumbnail)
     if (songName == "") {
-      Swal.fire("Error", "Missing field name!", "warning")
+      Swal.fire("Error", "Missing name field!", "warning")
     } else if (songAuthor == "") {
-      Swal.fire("Error", "Missing field author!", "warning")
+      Swal.fire("Error", "Missing author field!", "warning")
     } else if (songGenre == "") {
-      Swal.fire("Error", "Missing field genre!", "warning")
+      Swal.fire("Error", "Missing genre field!", "warning")
     } else if (songSrc == null) {
-      Swal.fire("Error", "Missing field source!", "warning")
+      Swal.fire("Error", "Missing source field!", "warning")
+    } else if (!songSrc.type.includes("audio")) {
+      Swal.fire("Error!", "Source file type not supported!", "error")
+    } else if (songThumbnail != null) {
+      if (!songThumbnail.type.includes("image")) {
+        Swal.fire("Error!", "Thumbnail file type not supported!", "error")
+        return
+      }
     } else if (isAddingNewAuthor || isAddingNewGenre) {
       Swal.fire(
         "Error",
@@ -52,7 +60,7 @@ export const AddSong = () => {
         "warning"
       )
     } else {
-      addSong()
+      // addSong()
     }
   }
 
@@ -164,7 +172,7 @@ export const AddSong = () => {
         <div className="d-flex align-items-center mt-2">
           <p className="mb-0 me-2">{t("song_detail.name")}:</p>
           <input
-            class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+            className="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
             type="text"
             defaultValue={songName}
             onChange={(e) => {
@@ -179,7 +187,7 @@ export const AddSong = () => {
           {isAddingNewAuthor ? (
             <>
               <input
-                class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+                className="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                 type="text"
                 defaultValue={""}
                 onChange={(e) => {
@@ -197,19 +205,19 @@ export const AddSong = () => {
           ) : (
             <select
               value={songAuthor}
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               onChange={(e) => {
                 console.log(e.currentTarget.value)
                 setSongAuthor(e.currentTarget.value)
               }}
             >
               <option key={""} value={""}>
-                <p class="dropdown-item pointer">{t("song_detail.author")}</p>
+                {t("song_detail.author")}
               </option>
               {authorList.map((author) => {
                 return (
                   <option key={author.id} value={author.id}>
-                    <p class="dropdown-item pointer">{author.name}</p>
+                    {author.name}
                   </option>
                 )
               })}
@@ -229,7 +237,7 @@ export const AddSong = () => {
           {isAddingNewGenre ? (
             <>
               <input
-                class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+                className="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                 type="text"
                 defaultValue={""}
                 onChange={(e) => {
@@ -247,19 +255,19 @@ export const AddSong = () => {
           ) : (
             <select
               value={songGenre}
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               onChange={(e) => {
                 console.log(e.currentTarget.value)
                 setSongGenre(e.currentTarget.value)
               }}
             >
               <option key={""} value={""}>
-                <p class="dropdown-item pointer">{t("song_detail.genre")}</p>
+                {t("song_detail.genre")}
               </option>
               {genreList.map((genre) => {
                 return (
                   <option key={genre.id} value={genre.id}>
-                    <p class="dropdown-item pointer">{genre.name}</p>
+                    {genre.name}
                   </option>
                 )
               })}
@@ -279,11 +287,14 @@ export const AddSong = () => {
           <input
             multiple={false}
             type="file"
-            accept=".mp3"
+            accept="audio/*"
             onChange={(e) => {
               const files = Array.from(e.target.files)
-              setSongSrc(files[0])
-              console.log("files:", files)
+              if (files.length > 0) {
+                setSongSrc(files[0])
+              } else {
+                setSongSrc(null)
+              }
             }}
           ></input>
         </div>
@@ -296,8 +307,12 @@ export const AddSong = () => {
             accept="image/*"
             onChange={(e) => {
               const files = Array.from(e.target.files)
-              setSongThumbnail(files[0])
-              console.log("files:", files)
+              if (files.length > 0) {
+                console.log(files[0])
+                setSongThumbnail(files[0])
+              } else {
+                setSongThumbnail(null)
+              }
             }}
           ></input>
         </div>
@@ -323,7 +338,7 @@ export const AddSong = () => {
         open={isLoading}
         className="flex flex-col"
       >
-        <p>Đang tải...</p>
+        <p>{t("loading")}</p>
         <CircularProgress className="mt-4" color="inherit" />
       </Backdrop>
     </div>

@@ -36,15 +36,15 @@ function App() {
     <div className="w-full grid grid-player md:max-w-md p-4">
       {/* Header */}
       <div className="inline-flex justify-end flex-row items-center">
-        <span class="material-icons">person</span>
+        <span className="material-icons">person</span>
         {isLogin ? (
           <>
             <p className="font-bold">{t("admin")}</p>
             <div
-              className="border border-gray-200 rounded-md p-2 md:px-4 md:py-2 pointer ml-4"
+              className="border border-gray-200 rounded-md p-1.5 md:px-4 md:py-2 pointer ml-4"
               onClick={() => logout()}
             >
-              <span className="font-bold">Đăng xuất</span>
+              <span className="font-bold">{t("logout")}</span>
             </div>
           </>
         ) : (
@@ -53,27 +53,23 @@ function App() {
               className="border border-gray-200 rounded-md p-2 md:px-4 md:py-2 pointer ml-4"
               onClick={() => setIsOpenModal(true)}
             >
-              <span className="font-bold">Đăng nhập</span>
+              <span className="font-bold">{t("login")}</span>
             </div>
           </>
         )}
         <p className="font-bold ml-2 mr-2">|</p>
 
-        <div class="dropdown ml-2">
+        <div className="dropdown ml-2">
           <select
             defaultValue={localStorage.getItem("lang")}
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             onChange={(e) => {
               console.log(e.currentTarget.value)
               changeLanguage(e.currentTarget.value)
             }}
           >
-            <option value="vi">
-              <p class="dropdown-item pointer">{t("languages.vi")}</p>
-            </option>
-            <option value="en">
-              <p class="dropdown-item pointer">{t("languages.en")}</p>
-            </option>
+            <option value="vi">{t("languages.vi")}</option>
+            <option value="en">{t("languages.en")}</option>
           </select>
         </div>
       </div>
@@ -92,6 +88,7 @@ function App() {
       <span className="text-md text-center mt-4 mb-2">
         © 2022{" "}
         <a
+          target={"_blank"}
           className="text-bold underline"
           href="https://github.com/dung-td/Springify"
         >

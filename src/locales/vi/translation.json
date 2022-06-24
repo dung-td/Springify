@@ -1,5 +1,5 @@
 {
-  "admin": "Quản trị viên",
+  "admin": "Admin",
   "language": "Ngôn ngữ",
   "actions": {
     "add": "Thêm",
@@ -40,5 +40,6 @@
   "addNewAuthor": "Thêm ca sĩ mới",
   "useExistGenre": "Sử dụng danh sách loại nhạc có sẵn",
   "addNewGenre": "Thêm mới thể loại nhạc",
-  "all": "Tất cả"
+  "all": "Tất cả",
+  "loading": "Đang tải"
 }

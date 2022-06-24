@@ -58,6 +58,9 @@ export const Player = () => {
   // Get music data
   useEffect(() => {
     setIsLoading(true)
+
+    if (id === undefined) id = localStorage.getItem("playing")
+
     if (id !== undefined) {
       localStorage.setItem("playing", id)
 
@@ -150,17 +153,18 @@ export const Player = () => {
           setShuffleSongs(data.object)
           console.log(data.object)
           if (song != null) {
-            let index = shuffleSongs.findIndex((s) => s.id === song.id)
+            console.log(song.id)
+            let index = data.object.findIndex((s) => s.id === song.id)
             console.log(index)
             if (index === 0) {
-              setPreviousSong(shuffleSongs[shuffleSongs.length - 1])
+              setPreviousSong(data.object[data.object.length - 1])
             } else {
-              setPreviousSong(shuffleSongs[index + 1])
+              setPreviousSong(data.object[index + 1])
             }
-            if (index === shuffleSongs.length - 1) {
-              setNextSong(shuffleSongs[0])
+            if (index === data.object.length - 1) {
+              setNextSong(data.object[0])
             } else {
-              setNextSong(shuffleSongs[index + 1])
+              setNextSong(data.object[index + 1])
             }
           }
         })
@@ -170,7 +174,7 @@ export const Player = () => {
   const play = () => {
     const audio = songRef.current
 
-    audio.volumn = 0.1
+    audio.volumn = 0.5
 
     if (isPlaying) {
       setIsPlaying(false)
@@ -188,7 +192,9 @@ export const Player = () => {
   }
 
   const next = () => {
-    if (!repeat || (repeat && playedSong.length < songCount)) {
+    console.log("Repeat: " + repeat)
+    console.log(playedSong.length + "/" + songCount)
+    if (repeat || (!repeat && playedSong.length < songCount)) {
       document.title = nextSong.name
       setPlayedSong((prevState) => [...prevState, song.id])
       localStorage.setItem("playing", nextSong.id)
@@ -211,7 +217,6 @@ export const Player = () => {
       }).then((result) => {
         if (result.isConfirmed) {
           setPlayedSong([])
-          window.location.reload()
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           window.location.href = "/"
         }
@@ -313,7 +318,7 @@ export const Player = () => {
             <div className="inline-flex items-center justity-between w-full">
               <Link to="/">
                 <div className="pointer rounded-md py-1">
-                  <span class="material-icons">arrow_back</span>
+                  <span className="material-icons">arrow_back</span>
                 </div>
               </Link>
             </div>
@@ -366,14 +371,16 @@ export const Player = () => {
                   className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110"
                   onClick={() => previous()}
                 >
-                  <span class="material-icons text-white">skip_previous</span>
+                  <span className="material-icons text-white">
+                    skip_previous
+                  </span>
                 </div>
                 <div>
                   <div
                     className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-20 h-20 inline-flex items-center justify-center pointer hover:scale-110"
                     onClick={() => play()}
                   >
-                    <span class="material-icons text-white">
+                    <span className="material-icons text-white">
                       {isPlaying ? "pause" : "play_arrow"}
                     </span>
                   </div>
@@ -382,7 +389,7 @@ export const Player = () => {
                   className="rounded-full shadow-2xl shadow-cyan-500/50 bg-cyan-500 w-12 h-12 inline-flex items-center justify-center pointer hover:scale-110"
                   onClick={() => next()}
                 >
-                  <span class="material-icons text-white">skip_next</span>
+                  <span className="material-icons text-white">skip_next</span>
                 </div>
               </div>
               <div className="mr-auto ml-auto flex items-center justify-between mt-2">
@@ -412,7 +419,7 @@ export const Player = () => {
                 <Tooltip title="Shuffle">
                   <div>
                     <span
-                      class={`material-icons pointer hover:text-cyan-500/50 ${
+                      className={`material-icons pointer hover:text-cyan-500/50 ${
                         shuffle ? "text-cyan-500/50" : ""
                       }`}
                       onClick={() => {
@@ -428,7 +435,7 @@ export const Player = () => {
                 <Tooltip title="Repeat all">
                   <div>
                     <span
-                      class={`material-icons pointer hover:text-cyan-500/50 ${
+                      className={`material-icons pointer hover:text-cyan-500/50 ${
                         repeat ? "text-cyan-500/50" : ""
                       }`}
                       onClick={() => {
@@ -444,7 +451,7 @@ export const Player = () => {
                 <Tooltip title={isMuted ? "volume_mute" : "volume_up"}>
                   <div>
                     <span
-                      class="material-icons pointer hover:text-cyan-500/50"
+                      className="material-icons pointer hover:text-cyan-500/50"
                       onClick={() => mute()}
                     >
                       {isMuted ? "volume_mute" : "volume_up"}
@@ -474,7 +481,7 @@ export const Player = () => {
                 </div>
                 <div className="items-center px-4 py-2 font-bold space-y-2 col-span-3">
                   <input
-                    class="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
+                    className="w-full px-4 py-2 text-sm text-gray-900 bg-gray-50 rounded-md border border-gray-300"
                     type="text"
                     value={songName}
                     onChange={(e) => {
@@ -485,7 +492,7 @@ export const Player = () => {
                   <select
                     disabled={!isEditing}
                     value={songAuthor}
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                       console.log(e.currentTarget.value)
                       setSongAuthor(e.currentTarget.value)
@@ -494,7 +501,7 @@ export const Player = () => {
                     {authorList.map((author) => {
                       return (
                         <option key={author.id} value={author.id}>
-                          <p class="dropdown-item pointer">{author.name}</p>
+                          {author.name}
                         </option>
                       )
                     })}
@@ -502,7 +509,7 @@ export const Player = () => {
                   <select
                     disabled={!isEditing}
                     value={songGenre}
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
                       console.log(e.currentTarget.value)
                       setSongGenre(e.currentTarget.value)
@@ -511,7 +518,7 @@ export const Player = () => {
                     {genreList.map((genre) => {
                       return (
                         <option key={genre.id} value={genre.id}>
-                          <p class="dropdown-item pointer">{genre.name}</p>
+                          {genre.name}
                         </option>
                       )
                     })}
@@ -557,9 +564,8 @@ export const Player = () => {
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={isLoading}
             className="flex flex-col"
-            // onClick={handleCloseLoading}
           >
-            <p>Loading...</p>
+            <p>{t("loading")}</p>
             <CircularProgress className="mt-4" color="inherit" />
           </Backdrop>
 
