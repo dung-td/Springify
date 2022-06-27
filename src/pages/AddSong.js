@@ -60,7 +60,7 @@ export const AddSong = () => {
         "warning"
       )
     } else {
-      // addSong()
+      addSong()
     }
   }
 
@@ -90,8 +90,10 @@ export const AddSong = () => {
               window.location.href = "/"
             }
           )
+        } else if (data.status === "NOT_ACCEPTABLE") {
+          Swal.fire("Fail!", data.message, "error")
         } else {
-          Swal.fire("Thất bại!", "Đã xảy ra lỗi, vui lòng thử lại", "error")
+          Swal.fire("Fail!", "Something went wrong!?", "error")
         }
       })
   }
@@ -121,7 +123,7 @@ export const AddSong = () => {
           } else {
             Swal.fire(
               "Error",
-              "Aleary have author with name:" + songAuthor,
+              "Already have author with name: " + songAuthor,
               "error"
             )
           }
@@ -154,7 +156,7 @@ export const AddSong = () => {
           } else {
             Swal.fire(
               "Error",
-              "Aleary have genre with name:" + songGenre,
+              "Already have genre with name: " + songGenre,
               "error"
             )
           }

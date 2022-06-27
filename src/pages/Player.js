@@ -263,19 +263,22 @@ export const Player = () => {
         genre: songGenre,
         author: songAuthor,
       }),
-    })
-      .then((res) => {
-        res.json()
-        setIsLoading(false)
-        setIsEditing(false)
-        if (res.status === 401 || res.status === 403) {
-          Swal.fire(t("fail"), t("nopermission"), "error")
-        }
-      })
-      .then((data) => {
+    }).then((res) => {
+      setIsLoading(false)
+      setIsEditing(false)
+      console.log(res.status)
+      if (res.status == 401 || res.status == 403) {
+        Swal.fire(t("fail"), t("nopermission"), "error")
+      } else if (res.status == 406) {
+        setIsEditing(true)
+        Swal.fire("Fail!", "Author already has this song name!", "warning")
+        return
+      } else {
         setUpdateAt(new Date())
-        Swal.fire(t("success"), "Thành công!", "success")
-      })
+        Swal.fire(t("Success"), "Saving song successfully!", "success")
+      }
+      res.json()
+    })
   }
 
   const onDelete = () => {

@@ -292,7 +292,7 @@ export const ListSong = (props) => {
                           play_arrow
                         </span>
                       </Link>
-                      <Link to={`/play/${song.id}`}>
+                      <Link to={`/edit/${song.id}`}>
                         <span className="material-icons pointer">edit</span>
                       </Link>
                     </td>
@@ -385,7 +385,6 @@ export const ListSong = (props) => {
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
         className="flex flex-col"
-        // onClick={handleCloseLoading}
       >
         <p>{t("loading")}</p>
         <CircularProgress className="mt-4" color="inherit" />

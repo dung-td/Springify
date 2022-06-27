@@ -21,7 +21,7 @@ export const Slider = ({ onChange, percentage }) => {
         onChange={(e) => {
           onChange(e.target.value)
         }}
-        value={percentage}
+        value={percentage.toString()}
       />
     </div>
   )
