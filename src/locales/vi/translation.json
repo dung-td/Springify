@@ -21,7 +21,8 @@
     "genre": "Thể loại",
     "author": "Tác giả",
     "src": "Nguồn",
-    "last_updated": "Cập nhật lần cuối"
+    "last_updated": "Cập nhật lần cuối",
+    "stream": "Lượt nghe"
   },
   "nowPlaying": "Bài hát hiện tại",
   "upcoming": "Tiếp theo",

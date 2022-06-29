@@ -21,7 +21,8 @@
     "genre": "Genre",
     "author": "Author",
     "src": "Source",
-    "last_updated": "Last updated"
+    "last_updated": "Last updated",
+    "stream": "Streams"
   },
   "nowPlaying": "Now playing",
   "upcoming": "Upcomming",

@@ -85,7 +85,7 @@ export const Player = () => {
     }
   }, [id])
 
-  // Get previous and next
+  // Get previous and next, update streams
   useEffect(() => {
     if (shuffle && shuffleSongs.length > 0) {
       let index = shuffleSongs.findIndex((s) => s.id === song.id)
@@ -313,6 +313,26 @@ export const Player = () => {
     return minutes + ":" + seconds
   }
 
+  const updateStream = () => {
+    if (song != null) {
+      fetch(`${server}/music/stream`, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        method: "PUT",
+        body: JSON.stringify({
+          id: song.id,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") console.log("Update stream success!")
+          else console.log("Fail to update stream")
+        })
+    }
+  }
+
   return (
     <div className="">
       {song ? (
@@ -401,6 +421,8 @@ export const Player = () => {
                   ref={songRef}
                   src={song.src}
                   onLoadedData={(e) => {
+                    console.log("Song " + song.id + " source loaded!")
+                    updateStream()
                     let audio = songRef.current
                     var promise = audio.play()
                     setDuration(e.currentTarget.duration)
@@ -478,6 +500,7 @@ export const Player = () => {
                   <p className="text-sm py-2">{t("song_detail.name")}: </p>
                   <p className="text-sm py-2">{t("song_detail.author")}: </p>
                   <p className="text-sm py-2">{t("song_detail.genre")}: </p>
+                  <p className="text-sm">{t("song_detail.stream")}: </p>
                   <p className="text-sm py-2">
                     {t("song_detail.last_updated")}:{" "}
                   </p>
@@ -526,9 +549,11 @@ export const Player = () => {
                       )
                     })}
                   </select>
+                  <div className="w-full">
+                    <p className=""> {song.streams}</p>
+                  </div>
                   <div className="w-full py-2">
                     <p className="">
-                      {" "}
                       {moment(updateAt).format("hh:mm DD/MM/YYYY")}
                     </p>
                   </div>

@@ -140,6 +140,7 @@ export const ListSong = (props) => {
 
       <div className="w-full">
         <div className="inline-flex items-center justify-between w-full h-full md:w-2/12 p-2">
+          <p className="mr-2">{t("song_detail.genre")}</p>
           <select
             value={genre}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
@@ -162,6 +163,7 @@ export const ListSong = (props) => {
         </div>
 
         <div className="inline-flex items-center justify-between w-full h-full md:w-2/12 p-2">
+          <p className="mr-2">{t("song_detail.author")} </p>
           <select
             value={author}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
@@ -225,6 +227,9 @@ export const ListSong = (props) => {
               <th className="px-6 py-3" scope="col">
                 {t("song_detail.genre")}
               </th>
+              <th className="px-6 py-3" scope="col">
+                {t("song_detail.stream")}
+              </th>
               {isLogin ? (
                 <th className="px-6 py-3" scope="col">
                   {t("action")}
@@ -238,7 +243,11 @@ export const ListSong = (props) => {
                 <tr
                   className="bg-white border-b text-black hover:bg-gray-200 hover:cursor-pointer"
                   key={song.id}
-                  // onClick={() => (window.location.href = "/play/" + song.id)}
+                  onClick={() => {
+                    if (!isLogin) {
+                      window.location.href = "/play/" + song.id
+                    }
+                  }}
                 >
                   {isLogin ? (
                     <th className="px-6 py-4" scope="col">
@@ -283,6 +292,10 @@ export const ListSong = (props) => {
 
                   <td className="text-xs md:text-base px-6 py-4">
                     {song.genre.name}
+                  </td>
+
+                  <td className="text-xs md:text-base px-6 py-4">
+                    {song.streams}
                   </td>
 
                   {isLogin ? (

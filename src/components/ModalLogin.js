@@ -47,7 +47,7 @@ const ModalLogin = () => {
       <div className="relative p-6">
         <div className="space-y-4">
           <div className="relative flex w-full flex-wrap items-stretch md-3">
-            <span className="z-10 h-full leading-snug font-normal absolute text-center text-slate-600 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
+            <span className="z-10 h-full leading-snug font-normal absolute text-center text-slate-600 bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
