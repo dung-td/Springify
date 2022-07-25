@@ -32,5 +32,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - You might want to find out the backend service of this project [here](https://github.com/dung-td/Springify_BE).
 
 ## Demo Website
-
 Visit [https://springify.vercel.app](https://springify.vercel.app) and happy listening!
+
+![image](https://user-images.githubusercontent.com/56954889/180682206-99e6f0c4-441f-4438-9d84-c70816034d0c.png)
+
+
