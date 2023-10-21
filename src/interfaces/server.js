@@ -2,4 +2,4 @@
 // export const server = "http://localhost:8080/api"
 // export const server = "http://springify.ap-southeast-2.elasticbeanstalk.com/api"
 // export const server = "https://springify-service.onrender.com/api"
-export const server = "https:api-springify.noter.id.vn/api"
+export const server = "https://api-springify.noter.id.vn/api"
